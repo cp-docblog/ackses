@@ -15,9 +15,27 @@ npm install
 npx expo start
 ```
 
-The app runs immediately against bundled demo data. To point it at a real
-database, apply the migrations in [`supabase/`](supabase/README.md) and set the
-two variables in `.env.example`.
+Copy `.env.example` to `.env.local` with the project URL and publishable key
+(already set for the ACKSES project in `eas.json` for builds). Without them the
+app falls back to bundled demo data.
+
+## Beta
+
+| | |
+|---|---|
+| Backend | Supabase project `ackses` (`pxwkyrlmdoocznbimqlj`), migrations 0001–0009 applied, demo catalogue seeded |
+| Build | EAS `@cp-devcode/ackses`, `preview` profile → installable APK |
+| OTA | expo-updates on channel `preview`; the app checks on launch and on every return to foreground and reloads itself. Ship JS changes with `npx eas-cli update --channel preview --message "…"` — no reinstall. Native changes (new packages, app.json) still need a build. |
+| Test accounts | `buyer@ackses.com / buyer123` · `seller@ackses.com / seller123` (owns the seeded Al-Rafidain shop). Created by `supabase/test_accounts.sql`. |
+
+**What is real.** Every control in the app writes to or reads from the
+database, with two deliberate exceptions: VIN lookup and search-by-image are
+UI previews that open a Coming Soon dialog. A buyer can browse, filter, sort,
+follow shops, add a car, save searches, set addresses and preferences, order
+with cash on delivery or card, and track the order through the seller's
+status changes. A seller can edit their shop, list and edit products with
+photos (Supabase Storage) and bulk price tiers, move orders through the
+timeline with a note the buyer sees, set a payout method and request payouts.
 
 ```bash
 npm run typecheck    # tsc --noEmit
@@ -29,12 +47,17 @@ npx expo export --platform ios   # verify the bundle builds
 **Auth** — sign in, buyer sign-up, seller sign-up (account then shop setup),
 forgot password. Supabase Auth, email + password.
 
-**Buyer** — onboarding (pick your car), listings with search and fitment
-badges, advanced filters, product detail, shop profile, seller profile, buyer
-profile (garage, saved searches, orders), cart with COD checkout.
+**Buyer** — sign-in/sign-up, onboarding (pick your car), listings with search,
+sort and fitment badges, advanced filters, product detail with photo gallery
+and bulk tiers, shop profile with follow and in-shop search, seller profile
+with WhatsApp / call / report, profile (garage, saved searches, orders,
+addresses, payment, notifications, support), cart with delivery details and
+checkout, order tracking.
 
-**Seller** — dashboard, shop management with product list, add product
-(3-step), orders with status timeline, account with balance and verification.
+**Seller** — dashboard, shop management (edit shop, product list, add/edit
+product with photo upload, category picker and price tiers), orders with the
+buyer's delivery details and a status timeline with notes, account with
+balance, withdraw, payout method, verification and settings.
 
 One app, one build. Buyers switch to selling from their profile; sellers switch
 back from their account. The choice persists.
@@ -65,6 +88,10 @@ neither is wired up. Nothing else in the app is stubbed.
 ```
 app/                      expo-router routes
   (auth)/                 sign-in, sign-up, seller sign-up, forgot password
+  order/[id].tsx          buyer order tracking
+  orders.tsx              buyer order history
+  edit-profile, addresses, payment-method, notifications, support
+  edit-shop, payout-method, withdraw, report-seller
   (buyer)/                buyer tabs: listings, search, cart, profile
   (seller)/               seller tabs: dashboard, shop, orders, account
   product/[id].tsx        product detail

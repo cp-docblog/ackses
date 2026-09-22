@@ -12,7 +12,12 @@ project is a deliberate step you take when you're ready.
 | `migrations/0003_rls.sql` | Row level security: public catalogue, shop-scoped writes, buyer-private garage and saved searches. |
 | `migrations/0004_auth.sql` | Creates a `profiles` row for every new account, and lets an account claim one `sellers` record so it can open a shop. |
 | `migrations/0005_trust_columns.sql` | Stops an account writing the columns buyers trust — verification, ratings, counts, review authorship, order totals. |
+| `migrations/0006_hardening.sql` | Advisor-driven: function grants, search_path, extension schema. |
+| `migrations/0007_split_product_read_policy.sql` | Guests never evaluate `owns_shop()` in a policy. |
+| `migrations/0008_beta_features.sql` | Profile prefs and addresses, seller contact and payout method, shop phone, bulk tiers and photo array, delivery fields on orders, payouts and reports tables, the `product-photos` bucket. Drops and recreates both views (a `select *` view cannot be replaced with reordered columns). |
+| `migrations/0009_search_returns_new_columns.sql` | `search_products` returns the 0008 columns; a function's return type cannot be altered, so it is dropped and recreated. |
 | `seed.sql` | The demo catalogue, mirroring `src/data/fixtures.ts` row for row. |
+| `test_accounts.sql` | Beta accounts `buyer@ackses.com` / `seller@ackses.com`. Idempotent. |
 
 ## Applying them
 
