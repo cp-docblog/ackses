@@ -50,7 +50,7 @@ export default function SellerOrders() {
         </Text>
       </Row>
 
-      <HScroll style={{ marginTop: 16, flexGrow: 0 }}>
+      <HScroll style={{ marginTop: 16}}>
         {t.orderChips.map((label, index) => (
           <Chip
             key={label}

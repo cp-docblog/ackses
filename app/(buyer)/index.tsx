@@ -150,7 +150,7 @@ export default function Listings() {
       </Row>
 
       {/* My car + fits-only quick filters. */}
-      <HScroll style={{ marginTop: 12, flexGrow: 0 }}>
+      <HScroll style={{ marginTop: 12}}>
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push('/(buyer)/profile')}

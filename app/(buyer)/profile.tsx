@@ -93,7 +93,7 @@ export default function BuyerProfile() {
             </Text>
           </Pressable>
         </Row>
-        <HScroll gap={10} style={{ marginTop: 10, flexGrow: 0 }}>
+        <HScroll gap={10} style={{ marginTop: 10}}>
           {(garage && garage.length ? garage : vehicle ? [vehicle] : []).map((car) => {
             const active = vehicle?.make === car.make && vehicle?.model === car.model && vehicle?.year === car.year;
             return (

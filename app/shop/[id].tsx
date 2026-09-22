@@ -202,7 +202,7 @@ export default function ShopProfile() {
               />
             </Row>
 
-            <HScroll style={{ marginTop: 12, flexGrow: 0 }}>
+            <HScroll style={{ marginTop: 12}}>
               {t.cats.slice(0, 4).map((label, index) => (
                 <Chip
                   key={label}

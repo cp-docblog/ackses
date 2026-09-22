@@ -670,7 +670,10 @@ export function HScroll({
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ gap, paddingHorizontal, flexDirection: isRTL ? 'row-reverse' : 'row' }}
-      style={style}
+      // A ScrollView defaults to flexGrow 1 / flexShrink 1. Stacked above a
+      // tall body list in a column, shrink squeezed this row to a sliver and
+      // its chips spilled over the content below. A rail is content-sized.
+      style={[{ flexGrow: 0, flexShrink: 0 }, style]}
     >
       {children}
     </ScrollView>
