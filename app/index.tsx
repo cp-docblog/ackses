@@ -1,36 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { Redirect } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useSession } from '../src/state/session';
 import { useStore } from '../src/state/store';
 import { colors } from '../src/theme';
 
-const ONBOARDED_KEY = 'ackses.onboarded';
-
 /**
- * Entry point: first run goes to onboarding so we learn the buyer's car,
- * afterwards straight to the listings. Someone who left the app in selling
- * mode lands back in the seller tabs, provided the account still owns a shop.
+ * Entry point. No account → sign-in. Signed in but no car yet → onboarding.
+ * Otherwise the buyer tabs, or the seller tabs if they left the app in
+ * selling mode and still own a shop.
  */
 export default function Index() {
-  const { role, hydrated } = useStore();
-  const { user, loading: sessionLoading } = useSession();
-  const [onboarded, setOnboarded] = useState<boolean | null>(null);
+  const { role, hydrated, vehicle, onboarded } = useStore();
+  const { user, loading } = useSession();
 
-  useEffect(() => {
-    AsyncStorage.getItem(ONBOARDED_KEY)
-      .then((value) => setOnboarded(value === 'true'))
-      .catch(() => setOnboarded(false));
-  }, []);
-
-  if (onboarded === null || !hydrated || sessionLoading) {
-    return <View style={{ flex: 1, backgroundColor: colors.black }} />;
-  }
-  if (!onboarded) return <Redirect href="/onboarding" />;
-  if (role === 'seller' && user?.sellerId) return <Redirect href="/(seller)/dashboard" />;
+  if (!hydrated || loading) return <View style={{ flex: 1, backgroundColor: colors.black }} />;
+  if (!user) return <Redirect href="/(auth)/sign-in" />;
+  if (!onboarded || !vehicle) return <Redirect href="/onboarding" />;
+  if (role === 'seller' && user.sellerId) return <Redirect href="/(seller)/dashboard" />;
   return <Redirect href="/(buyer)" />;
 }
-
-export { ONBOARDED_KEY };

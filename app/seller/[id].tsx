@@ -1,5 +1,5 @@
-import React from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import React, { useState } from 'react';
+import { Linking, Pressable, ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,7 +8,6 @@ import { ScreenHeader } from '../../src/components/chrome';
 import { Button, Card, EmptyState, Loading, Row, SectionLabel, Text } from '../../src/components/ui';
 import { useT } from '../../src/i18n';
 import { pick } from '../../src/lib/format';
-import { useComingSoon } from '../../src/components/ComingSoon';
 import { useSeller, useSellerShops } from '../../src/hooks/queries';
 import { colors, radius } from '../../src/theme';
 
@@ -17,7 +16,7 @@ export default function SellerProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t, lang, row, isRTL } = useT();
   const insets = useSafeAreaInsets();
-  const { show } = useComingSoon();
+  const [contactError, setContactError] = useState<string | null>(null);
 
   const { data: seller, isPending, isError } = useSeller(id ?? '');
   const { data: shops } = useSellerShops(id ?? '');
@@ -90,15 +89,32 @@ export default function SellerProfile() {
         </Row>
 
         <Row style={{ gap: 10, marginTop: 16 }}>
-          <Button title={t.message} size="md" style={{ flex: 1 }} onPress={() => show('generic')} />
+          <Button
+            title={t.message}
+            size="md"
+            style={{ flex: 1 }}
+            onPress={() => {
+              const number = seller.whatsapp || seller.phone?.replace(/[^\d]/g, '');
+              if (!number) return setContactError(t.noContact);
+              Linking.openURL(`https://wa.me/${number}`).catch(() => setContactError(t.authGeneric));
+            }}
+          />
           <Button
             title={t.call}
             variant="ghost"
             size="md"
             style={{ flex: 1 }}
-            onPress={() => show('generic')}
+            onPress={() => {
+              if (!seller.phone) return setContactError(t.noContact);
+              Linking.openURL(`tel:${seller.phone}`).catch(() => setContactError(t.authGeneric));
+            }}
           />
         </Row>
+        {contactError ? (
+          <Text size={12} color={colors.muted} align="center" style={{ marginTop: 8 }}>
+            {contactError}
+          </Text>
+        ) : null}
 
         <SectionLabel style={{ marginTop: 26 }}>{t.shopsBy}</SectionLabel>
         <View style={{ gap: 8, marginTop: 10 }}>
@@ -189,7 +205,7 @@ export default function SellerProfile() {
 
         <Pressable
           accessibilityRole="button"
-          onPress={() => show('generic')}
+          onPress={() => router.push({ pathname: '/report-seller', params: { id: seller.id } })}
           style={{ height: 44, alignItems: 'center', justifyContent: 'center', marginTop: 16 }}
         >
           <Text size={12} weight={500} color={colors.muted}>

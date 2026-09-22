@@ -3,7 +3,7 @@ import { Pressable, ScrollView, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useComingSoon } from '../../src/components/ComingSoon';
+import { OptionSheet } from '../../src/components/OptionSheet';
 import { Icon } from '../../src/components/Icon';
 import { DemoDataNotice, Logo, RoundButton } from '../../src/components/chrome';
 import { ProductGridCard } from '../../src/components/ProductCard';
@@ -18,9 +18,9 @@ import { colors, radius } from '../../src/theme';
 export default function Listings() {
   const { t, row, font, isRTL } = useT();
   const insets = useSafeAreaInsets();
-  const { show } = useComingSoon();
-  const { filters, setFilters, resetFilters, vehicle, cartCount } = useStore();
+  const { filters, setFilters, resetFilters, vehicle, cartCount, sortKey, setSortKey } = useStore();
   const [draft, setDraft] = useState(filters.text);
+  const [sortOpen, setSortOpen] = useState(false);
 
   const subcategoryPosition = useMemo(() => {
     if (filters.categoryIndex < 0 || !filters.subcategory) return null;
@@ -28,7 +28,24 @@ export default function Listings() {
     return index >= 0 ? index : null;
   }, [filters.categoryIndex, filters.subcategory, t.subcats]);
 
-  const { data: products, isPending, isError } = useProducts(filters, subcategoryPosition);
+  const { data: fetched, isPending, isError } = useProducts(filters, subcategoryPosition);
+
+  // Relevance is the server's order (fitting parts first, then newest).
+  const products = useMemo(() => {
+    if (!fetched) return fetched;
+    if (sortKey === 'price_asc') return [...fetched].sort((a, b) => a.priceIqd - b.priceIqd);
+    if (sortKey === 'price_desc') return [...fetched].sort((a, b) => b.priceIqd - a.priceIqd);
+    if (sortKey === 'newest') return [...fetched].sort((a, b) => (b.id > a.id ? 1 : -1));
+    return fetched;
+  }, [fetched, sortKey]);
+
+  const sortOptions = [
+    { key: 'relevance' as const, label: t.sortRelevance },
+    { key: 'price_asc' as const, label: t.sortPriceAsc },
+    { key: 'price_desc' as const, label: t.sortPriceDesc },
+    { key: 'newest' as const, label: t.sortNewest },
+  ];
+  const sortLabel = sortOptions.find((o) => o.key === sortKey)?.label ?? t.sortRelevance;
 
   const submitSearch = () => setFilters((prev) => ({ ...prev, text: draft }));
 
@@ -232,9 +249,11 @@ export default function Listings() {
               ({products?.length ?? 0})
             </Text>
           </Row>
-          <Text size={12} color={colors.muted}>
-            {t.sort} ▾
-          </Text>
+          <Pressable accessibilityRole="button" onPress={() => setSortOpen(true)} hitSlop={8}>
+            <Text size={12} color={colors.muted}>
+              {sortLabel} ▾
+            </Text>
+          </Pressable>
         </Row>
 
         {isPending ? <Loading /> : null}
@@ -266,6 +285,15 @@ export default function Listings() {
           ))}
         </View>
       </ScrollView>
+
+      <OptionSheet
+        visible={sortOpen}
+        title={t.sortTitle}
+        options={sortOptions}
+        value={sortKey}
+        onSelect={setSortKey}
+        onClose={() => setSortOpen(false)}
+      />
     </View>
   );
 }

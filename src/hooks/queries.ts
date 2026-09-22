@@ -152,3 +152,93 @@ export function usePlaceOrder() {
     },
   });
 }
+
+// ─────────────────────────────────────────────────────────────
+// Profile, follows, seller tools
+// ─────────────────────────────────────────────────────────────
+
+export const moreKeys = {
+  profile: () => ['profile'] as const,
+  following: (shopId: string) => ['following', shopId] as const,
+  payouts: (sellerId: string) => ['payouts', sellerId] as const,
+};
+
+export function useProfile(enabled = true) {
+  return useQuery({ queryKey: moreKeys.profile(), queryFn: repo.getProfile, enabled });
+}
+
+export function useUpdateProfile() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (patch: Parameters<typeof repo.updateProfile>[0]) => repo.updateProfile(patch),
+    onSuccess: () => client.invalidateQueries({ queryKey: moreKeys.profile() }),
+  });
+}
+
+export function useFollowing(shopId: string, enabled = true) {
+  return useQuery({
+    queryKey: moreKeys.following(shopId),
+    queryFn: () => repo.isFollowingShop(shopId),
+    enabled: enabled && !!shopId,
+  });
+}
+
+export function useSetFollowing(shopId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (following: boolean) => repo.setFollowingShop(shopId, following),
+    onSuccess: () => client.invalidateQueries({ queryKey: moreKeys.following(shopId) }),
+  });
+}
+
+export function useUpdateShop(shopId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (patch: repo.ShopPatch) => repo.updateShop(shopId, patch),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.shop(shopId) }),
+  });
+}
+
+export function useUpdateProduct(shopId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string; input: repo.NewProduct }) => repo.updateProduct(id, input),
+    onSuccess: (_r, v) => {
+      client.invalidateQueries({ queryKey: keys.shopProducts(shopId) });
+      client.invalidateQueries({ queryKey: keys.product(v.id) });
+      client.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+}
+
+export function useUpdateSellerContact(sellerId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (patch: Parameters<typeof repo.updateSellerContact>[1]) => repo.updateSellerContact(sellerId, patch),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.seller(sellerId) }),
+  });
+}
+
+export function usePayouts(sellerId: string) {
+  return useQuery({
+    queryKey: moreKeys.payouts(sellerId),
+    queryFn: () => repo.listPayouts(sellerId),
+    enabled: !!sellerId,
+  });
+}
+
+export function useRequestPayout(sellerId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ amountIqd, method }: { amountIqd: number; method: Parameters<typeof repo.requestPayout>[2] }) =>
+      repo.requestPayout(sellerId, amountIqd, method),
+    onSuccess: () => client.invalidateQueries({ queryKey: moreKeys.payouts(sellerId) }),
+  });
+}
+
+export function useCreateReport() {
+  return useMutation({
+    mutationFn: ({ sellerId, reason, details }: { sellerId: string; reason: string; details: string }) =>
+      repo.createReport(sellerId, reason, details),
+  });
+}

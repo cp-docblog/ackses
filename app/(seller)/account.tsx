@@ -3,26 +3,25 @@ import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useComingSoon } from '../../src/components/ComingSoon';
 import { VerifiedDot } from '../../src/components/Icon';
 import { LanguageToggle } from '../../src/components/chrome';
 import { Badge, Button, ListGroup, ListRow, Row, SectionLabel, StatTile, Text } from '../../src/components/ui';
 import { useT } from '../../src/i18n';
 import { formatIqd, pick } from '../../src/lib/format';
 import { useSeller } from '../../src/hooks/queries';
+import { useMySellerId } from '../../src/hooks/useMyShop';
 import { useSession } from '../../src/state/session';
 import { useStore } from '../../src/state/store';
-import { SELLER, SELLER_BALANCE } from '../../src/data/fixtures';
+import { SELLER_BALANCE } from '../../src/data/fixtures';
 import { colors, radius } from '../../src/theme';
 
 /** S1 · Seller account — balance, verification, settings. */
 export default function SellerAccount() {
   const { t, lang, row, toggleLang } = useT();
   const insets = useSafeAreaInsets();
-  const { show } = useComingSoon();
   const { setRole } = useStore();
   const { user, signOut } = useSession();
-  const { data: seller } = useSeller(SELLER.id);
+  const { data: seller } = useSeller(useMySellerId());
 
   // The signed-in account's own name wins over the seeded seller record.
   const displayName = user?.fullName || user?.email || (seller ? pick(seller.name, lang) : '');
@@ -36,9 +35,9 @@ export default function SellerAccount() {
   const menuActions: (() => void)[] = [
     () => router.push('/(seller)/shop'),
     () => router.push('/(seller)/orders'),
-    () => show('generic'),
-    () => show('generic'),
-    () => show('generic'),
+    () => router.push('/notifications'),
+    () => router.push('/payout-method'),
+    () => router.push('/support'),
     toggleLang,
   ];
 
@@ -130,7 +129,7 @@ export default function SellerAccount() {
             <Button
               title={t.withdraw}
               size="sm"
-              onPress={() => show('generic')}
+              onPress={() => router.push('/withdraw')}
               style={{ backgroundColor: colors.white }}
             />
           </Row>
@@ -167,7 +166,11 @@ export default function SellerAccount() {
         {/* Menu */}
         <View style={{ marginTop: 22 }}>
           <ListGroup>
-            {t.accMenu.map(([label, value], index) => (
+            {t.accMenu.map(([label, fallback], index) => {
+              const value = index === 3 && seller?.payoutMethod
+                ? (seller.payoutMethod.kind === 'zaincash' ? t.payoutZain : seller.payoutMethod.kind === 'bank' ? t.payoutBank : t.payoutCash)
+                : fallback;
+              return (
               <ListRow
                 key={label}
                 label={label}
@@ -175,7 +178,8 @@ export default function SellerAccount() {
                 first={index === 0}
                 onPress={menuActions[index]}
               />
-            ))}
+              );
+            })}
           </ListGroup>
         </View>
 

@@ -17,6 +17,9 @@ export const SELLER: Seller = {
   ordersCount: 3420,
   responseTime: '< 1h',
   city: { en: 'Baghdad', ar: 'بغداد' },
+  phone: '+9647701234412',
+  whatsapp: '9647701234412',
+  payoutMethod: { kind: 'zaincash', account: '07701234412', holder: 'Haider Al-Rubaie' },
 };
 
 export const SHOPS: Shop[] = [
@@ -39,6 +42,7 @@ export const SHOPS: Shop[] = [
     followers: '2.1k',
     hours: '9:00 – 21:00',
     deliveryFee: 2500,
+    phone: '+9647701234412',
   },
   {
     id: '00000000-0000-4000-8000-000000000202',
@@ -86,6 +90,10 @@ export const PRODUCTS: Product[] = [
     fitments: [
       { make: 'Toyota', model: 'Camry', yearFrom: 2018, yearTo: 2024 },
       { make: 'Toyota', model: 'Corolla', yearFrom: 2019, yearTo: 2024 },
+    ],
+    bulkTiers: [
+      { minQty: 1, maxQty: 3, priceIqd: 45000 },
+      { minQty: 4, maxQty: 9, priceIqd: 41000 },
     ],
   },
   {
@@ -346,6 +354,29 @@ export const BUYER_ORDERS: Order[] = [
       },
     ],
   },
+];
+
+export const PROFILE: import('./types').Profile = {
+  id: 'demo-user',
+  fullName: 'Mustafa Al-Jabouri',
+  phone: '+9647701114412',
+  city: { en: 'Baghdad', ar: 'بغداد' },
+  addresses: [
+    {
+      id: 'addr-1',
+      label: 'Home',
+      line: 'Karrada, Al-Attar St., building 8',
+      city: { en: 'Baghdad', ar: 'بغداد' },
+      phone: '+9647701114412',
+    },
+  ],
+  notificationPrefs: { orders: true, alerts: true, marketing: false },
+  paymentPreference: 'cod',
+};
+
+export const PAYOUTS: import('./types').Payout[] = [
+  { id: 'p-1', amountIqd: 1500000, status: 'paid', createdAt: '2026-09-11T10:00:00Z' },
+  { id: 'p-2', amountIqd: 900000, status: 'paid', createdAt: '2026-09-18T10:00:00Z' },
 ];
 
 export const SELLER_BALANCE = {

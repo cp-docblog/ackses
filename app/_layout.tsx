@@ -22,6 +22,7 @@ import {
 } from '@expo-google-fonts/tajawal';
 
 import { ComingSoonProvider } from '../src/components/ComingSoon';
+import { UpdatesGate } from '../src/components/UpdatesGate';
 import { I18nProvider } from '../src/i18n';
 import { SessionProvider } from '../src/state/session';
 import { StoreProvider } from '../src/state/store';
@@ -32,8 +33,13 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30_000,
+      staleTime: 60_000,
+      gcTime: 10 * 60_000,
       retry: 1,
+      // A phone has no window focus; refetching on every screen focus made
+      // each tab switch round-trip to the database for data it already had.
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
     },
   },
 });
@@ -66,6 +72,7 @@ export default function RootLayout() {
             <SessionProvider>
               <StoreProvider>
                 <ComingSoonProvider>
+                  <UpdatesGate>
                   <StatusBar style="light" />
                   <Stack
                     screenOptions={{
@@ -94,7 +101,17 @@ export default function RootLayout() {
                       name="delete-product"
                       options={{ presentation: 'transparentModal', animation: 'fade' }}
                     />
+                    {['edit-profile', 'edit-shop', 'withdraw', 'report-seller'].map(
+                      (name) => (
+                        <Stack.Screen
+                          key={name}
+                          name={name}
+                          options={{ presentation: 'transparentModal', animation: 'fade' }}
+                        />
+                      ),
+                    )}
                   </Stack>
+                  </UpdatesGate>
                 </ComingSoonProvider>
               </StoreProvider>
             </SessionProvider>

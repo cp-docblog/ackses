@@ -9,7 +9,7 @@ import { Button, Loading, PhotoPlaceholder, Row, Text } from '../src/components/
 import { useT } from '../src/i18n';
 import { formatIqd, formatTime, pick } from '../src/lib/format';
 import { useOrder, useUpdateOrderStatus } from '../src/hooks/queries';
-import { DEMO_SHOP_ID } from '../src/data/repository';
+import { useMyShopId } from '../src/hooks/useMyShop';
 import { ORDER_STATUSES } from '../src/data/types';
 import { colors, mono, radius } from '../src/theme';
 
@@ -20,7 +20,7 @@ export default function OrderStatusSheet() {
   const insets = useSafeAreaInsets();
 
   const { data: order, isPending } = useOrder(id ?? '');
-  const update = useUpdateOrderStatus(DEMO_SHOP_ID);
+  const update = useUpdateOrderStatus(useMyShopId());
 
   const [selected, setSelected] = useState<number | null>(null);
   const [note, setNote] = useState('');
@@ -76,9 +76,14 @@ export default function OrderStatusSheet() {
                   {pick(order.items[0]?.name ?? { en: '', ar: '' }, lang)}
                 </Text>
                 <Text size={11} color={colors.muted} style={{ marginTop: 2 }}>
-                  × {order.items[0]?.qty ?? 1} · {formatIqd(order.totalIqd)} {t.iqd} ·{' '}
+                  × {order.items.reduce((s, i) => s + i.qty, 0)} · {formatIqd(order.totalIqd)} {t.iqd} ·{' '}
                   {order.paymentMethod === 'cod' ? t.cod : t.card}
                 </Text>
+                {order.address || order.phone ? (
+                  <Text size={11} color={colors.muted} style={{ marginTop: 4 }} numberOfLines={2}>
+                    {[order.address, order.phone].filter(Boolean).join(' · ')}
+                  </Text>
+                ) : null}
               </View>
             </Row>
 

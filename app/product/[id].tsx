@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,6 +18,7 @@ import {
 } from '../../src/components/ui';
 import { useT } from '../../src/i18n';
 import { formatIqd, pick, vehicleLabel } from '../../src/lib/format';
+import { Card } from '../../src/components/ui';
 import { useProduct, useSeller, useShop } from '../../src/hooks/queries';
 import { useStore } from '../../src/state/store';
 import { SELLER } from '../../src/data/fixtures';
@@ -30,6 +31,8 @@ export default function ProductDetail() {
   const insets = useSafeAreaInsets();
   const { vehicle, addToCart, cart } = useStore();
   const [justAdded, setJustAdded] = useState(false);
+  const [page, setPage] = useState(0);
+  const { width } = useWindowDimensions();
 
   const { data: product, isPending, isError } = useProduct(id ?? '', vehicle);
   const { data: shop } = useShop(product?.shopId ?? '');
@@ -40,7 +43,9 @@ export default function ProductDetail() {
 
   const inCart = cart[product.id] ?? 0;
 
+  const outOfStock = product.stock <= 0;
   const add = () => {
+    if (outOfStock) return;
     addToCart(product.id);
     setJustAdded(true);
   };
@@ -48,13 +53,26 @@ export default function ProductDetail() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.black }}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Gallery */}
+        {/* Gallery — swipe through the listing's photos */}
         <View>
-          <PhotoPlaceholder
-            label={`product photo · ${product.imageLabel}`}
-            stripe={10}
-            style={{ height: 340, width: '100%' }}
-          />
+          {product.imageUrls && product.imageUrls.length > 0 ? (
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onMomentumScrollEnd={(e) => setPage(Math.round(e.nativeEvent.contentOffset.x / width))}
+            >
+              {product.imageUrls.map((uri) => (
+                <PhotoPlaceholder key={uri} uri={uri} stripe={10} style={{ height: 340, width }} />
+              ))}
+            </ScrollView>
+          ) : (
+            <PhotoPlaceholder
+              label={`product photo · ${product.imageLabel}`}
+              stripe={10}
+              style={{ height: 340, width: '100%' }}
+            />
+          )}
           <RoundButton
             label={t.back}
             background={colors.scrim}
@@ -64,9 +82,9 @@ export default function ProductDetail() {
             <BackChevron />
           </RoundButton>
           <Row style={{ position: 'absolute', bottom: 14, alignSelf: 'center', gap: 6 }}>
-            <View style={{ width: 18, height: 6, borderRadius: 3, backgroundColor: colors.red }} />
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#555' }} />
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#555' }} />
+            {(product.imageUrls?.length ? product.imageUrls : [0, 1, 2]).map((_, i) => (
+              <View key={i} style={{ width: i === page ? 18 : 6, height: 6, borderRadius: 3, backgroundColor: i === page ? colors.red : '#555' }} />
+            ))}
           </Row>
         </View>
 
@@ -236,6 +254,35 @@ export default function ProductDetail() {
             ))}
           </View>
 
+          {product.bulkTiers && product.bulkTiers.length > 0 ? (
+            <>
+              <SectionLabel style={{ marginTop: 22 }}>{t.bulk.replace(' (OPTIONAL)', '').replace(' (اختياري)', '')}</SectionLabel>
+              <View style={{ marginTop: 8, borderWidth: 1, borderColor: colors.borderSoft, borderRadius: radius.xl, overflow: 'hidden' }}>
+                {product.bulkTiers.map((tier, index) => (
+                  <Row key={index} style={{ justifyContent: 'space-between', paddingVertical: 12, paddingHorizontal: 14, borderTopWidth: index ? 1 : 0, borderTopColor: colors.hairline }}>
+                    <Text size={13} color={colors.muted}>
+                      {tier.minQty}{tier.maxQty ? ` – ${tier.maxQty}` : '+'} {t.pcs}
+                    </Text>
+                    <Text size={13} weight={700}>
+                      {formatIqd(tier.priceIqd)} {t.iqd}
+                    </Text>
+                  </Row>
+                ))}
+              </View>
+            </>
+          ) : null}
+
+          {product.description ? (
+            <>
+              <SectionLabel style={{ marginTop: 22 }}>{t.description}</SectionLabel>
+              <Card style={{ marginTop: 8, padding: 14 }}>
+                <Text size={13} color={colors.muted} lineHeight={1.6}>
+                  {product.description}
+                </Text>
+              </Card>
+            </>
+          ) : null}
+
           <View style={{ height: 24 }} />
         </View>
       </ScrollView>
@@ -253,14 +300,16 @@ export default function ProductDetail() {
         }}
       >
         <Button
-          title={justAdded || inCart > 0 ? t.added : t.addToCart}
+          title={outOfStock ? t.outStock : justAdded || inCart > 0 ? t.added : t.addToCart}
           variant="outline"
-          style={{ flex: 1 }}
+          style={{ flex: 1, opacity: outOfStock ? 0.5 : 1 }}
+          disabled={outOfStock}
           onPress={add}
         />
         <Button
           title={t.buyNow}
-          style={{ flex: 1 }}
+          style={{ flex: 1, opacity: outOfStock ? 0.5 : 1 }}
+          disabled={outOfStock}
           onPress={() => {
             addToCart(product.id);
             router.push('/(buyer)/cart');

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,19 +18,25 @@ import {
 } from '../../src/components/ui';
 import { useT } from '../../src/i18n';
 import { pick } from '../../src/lib/format';
-import { useShop, useShopProducts, useShopReviews } from '../../src/hooks/queries';
+import { useFollowing, useSetFollowing, useShop, useShopProducts, useShopReviews } from '../../src/hooks/queries';
+import { useAuthGate } from '../../src/hooks/useAuthGate';
+import { useSession } from '../../src/state/session';
 import { useStore } from '../../src/state/store';
 import { colors, radius } from '../../src/theme';
 
 /** 04 · Shop profile (buyer view). */
 export default function ShopProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { t, lang, row, isRTL } = useT();
+  const { t, lang, row, font, isRTL } = useT();
   const insets = useSafeAreaInsets();
   const { vehicle } = useStore();
+  const { user } = useSession();
+  const { require } = useAuthGate();
   const [tab, setTab] = useState(0);
-  const [following, setFollowing] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<number | null>(null);
+  const [query, setQuery] = useState('');
+  const { data: following = false } = useFollowing(id ?? '', !!user);
+  const setFollowing = useSetFollowing(id ?? '');
 
   const { data: shop, isPending, isError } = useShop(id ?? '');
   const { data: products } = useShopProducts(id ?? '', vehicle);
@@ -39,8 +45,10 @@ export default function ShopProfile() {
   if (isPending) return <Loading />;
   if (isError || !shop) return <EmptyState message={t.loadFailed} />;
 
-  const visible =
-    categoryFilter === null ? products : products?.filter((p) => p.categoryIndex === categoryFilter);
+  const text = query.trim().toLowerCase();
+  const visible = products
+    ?.filter((p) => (categoryFilter === null ? true : p.categoryIndex === categoryFilter))
+    .filter((p) => (text ? `${p.name.en} ${p.name.ar} ${p.oem} ${p.brand}`.toLowerCase().includes(text) : true));
 
   const stats = [
     { value: String(shop.productCount), label: t.shopStats[0] },
@@ -104,7 +112,7 @@ export default function ShopProfile() {
           </View>
           <Pressable
             accessibilityRole="button"
-            onPress={() => setFollowing((prev) => !prev)}
+            onPress={() => require(() => setFollowing.mutate(!following), { reason: 'signInToSave', next: `/shop/${id}` })}
             style={{
               height: 40,
               paddingHorizontal: 16,
@@ -185,9 +193,13 @@ export default function ShopProfile() {
               }}
             >
               <Icon name="search" size={16} color={colors.muted} />
-              <Text size={12} color={colors.muted}>
-                {t.searchInShop}
-              </Text>
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder={t.searchInShop}
+                placeholderTextColor={colors.muted}
+                style={{ flex: 1, color: colors.white, fontFamily: font(500), fontSize: 12, textAlign: isRTL ? 'right' : 'left', paddingVertical: 0 }}
+              />
             </Row>
 
             <HScroll style={{ marginTop: 12, flexGrow: 0 }}>

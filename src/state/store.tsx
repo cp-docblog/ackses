@@ -9,11 +9,17 @@ import React, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { GARAGE } from '../data/fixtures';
-import { defaultFilters, type ProductFilters, type Vehicle } from '../data/types';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { defaultFilters, type ProductFilters, type SortKey, type Vehicle } from '../data/types';
 
 const CART_KEY = 'ackses.cart';
 const VEHICLE_KEY = 'ackses.vehicle';
 const ROLE_KEY = 'ackses.role';
+const ONBOARDED_KEY = 'ackses.onboarded';
+const CITY_KEY = 'ackses.city';
+
+/** On fixtures the demo car is pre-selected; a real account starts empty. */
+const INITIAL_VEHICLE: Vehicle | null = isSupabaseConfigured ? null : GARAGE[0];
 
 export type Role = 'buyer' | 'seller';
 
@@ -42,6 +48,16 @@ type Store = {
   role: Role;
   setRole: (role: Role) => void;
 
+  /** True once the buyer has been through onboarding at least once. */
+  onboarded: boolean;
+  setOnboarded: (value: boolean) => void;
+
+  // Listings sort and delivery city — small, device-local preferences
+  sortKey: SortKey;
+  setSortKey: (key: SortKey) => void;
+  deliveryCity: { en: string; ar: string };
+  setDeliveryCity: (city: { en: string; ar: string }) => void;
+
   /** False until persisted state has been read back. */
   hydrated: boolean;
 };
@@ -50,22 +66,27 @@ const StoreContext = createContext<Store | null>(null);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<Cart>({});
-  const [vehicle, setVehicleState] = useState<Vehicle | null>(GARAGE[0]);
+  const [vehicle, setVehicleState] = useState<Vehicle | null>(INITIAL_VEHICLE);
   const [filters, setFilters] = useState<ProductFilters>({
     ...defaultFilters,
-    vehicle: GARAGE[0],
+    vehicle: INITIAL_VEHICLE,
   });
   const [role, setRoleState] = useState<Role>('buyer');
+  const [onboarded, setOnboardedState] = useState(false);
+  const [sortKey, setSortKeyState] = useState<SortKey>('relevance');
+  const [deliveryCity, setDeliveryCityState] = useState<{ en: string; ar: string }>({ en: 'Baghdad', ar: 'بغداد' });
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const [storedCart, storedVehicle, storedRole] = await AsyncStorage.multiGet([
+        const [storedCart, storedVehicle, storedRole, storedOnboarded, storedCity] = await AsyncStorage.multiGet([
           CART_KEY,
           VEHICLE_KEY,
           ROLE_KEY,
+          ONBOARDED_KEY,
+          CITY_KEY,
         ]);
         if (cancelled) return;
         if (storedCart[1]) setCart(JSON.parse(storedCart[1]) as Cart);
@@ -75,6 +96,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           setFilters((prev) => ({ ...prev, vehicle: parsed }));
         }
         if (storedRole[1] === 'buyer' || storedRole[1] === 'seller') setRoleState(storedRole[1]);
+        if (storedOnboarded[1] === 'true') setOnboardedState(true);
+        if (storedCity[1]) setDeliveryCityState(JSON.parse(storedCity[1]));
       } catch {
         // Corrupt or unavailable storage — carry on with defaults.
       } finally {
@@ -100,6 +123,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const setRole = useCallback((next: Role) => {
     setRoleState(next);
     AsyncStorage.setItem(ROLE_KEY, next).catch(() => {});
+  }, []);
+
+  const setOnboarded = useCallback((next: boolean) => {
+    setOnboardedState(next);
+    AsyncStorage.setItem(ONBOARDED_KEY, String(next)).catch(() => {});
+  }, []);
+
+  const setDeliveryCity = useCallback((next: { en: string; ar: string }) => {
+    setDeliveryCityState(next);
+    AsyncStorage.setItem(CITY_KEY, JSON.stringify(next)).catch(() => {});
   }, []);
 
   const value = useMemo<Store>(() => {
@@ -128,9 +161,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       resetFilters: () => setFilters({ ...defaultFilters, vehicle }),
       role,
       setRole,
+      onboarded,
+      setOnboarded,
+      sortKey,
+      setSortKey: setSortKeyState,
+      deliveryCity,
+      setDeliveryCity,
       hydrated,
     };
-  }, [cart, persistCart, vehicle, setVehicle, filters, role, setRole, hydrated]);
+  }, [cart, persistCart, vehicle, setVehicle, filters, role, setRole, onboarded, setOnboarded, sortKey, deliveryCity, setDeliveryCity, hydrated]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

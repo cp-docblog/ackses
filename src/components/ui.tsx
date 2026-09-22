@@ -15,6 +15,9 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import Svg, { Defs, Pattern, Rect } from 'react-native-svg';
+import { Image as ExpoImage } from 'expo-image';
+
 import { useT } from '../i18n';
 import { colors, mono, placeholder, radius, type FontWeightToken } from '../theme';
 
@@ -92,18 +95,27 @@ export function Row({
   );
 }
 
-/** The striped tile that stands in for part photography. */
-export function PhotoPlaceholder({
+/**
+ * The striped tile that stands in for part photography, or the real photo
+ * once a listing has one.
+ *
+ * The stripes are one SVG pattern — a single native view — instead of the
+ * two dozen rotated Views the first version stacked per tile, which was the
+ * single biggest render cost on the listings grid.
+ */
+export const PhotoPlaceholder = React.memo(function PhotoPlaceholder({
   style,
   label,
   stripe = 8,
+  uri,
 }: {
   style?: StyleProp<ViewStyle>;
   label?: string;
   stripe?: number;
+  /** When set, the photo is shown and the stripes are only the loading state. */
+  uri?: string | null;
 }) {
-  // React Native has no repeating-linear-gradient, so the design's 45° stripes
-  // are drawn as evenly spaced rotated bars over the darker base colour.
+  const period = stripe * 2;
   return (
     <View
       style={[
@@ -111,28 +123,34 @@ export function PhotoPlaceholder({
         style,
       ]}
     >
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        {Array.from({ length: 26 }).map((_, i) => (
-          <View
-            key={i}
-            style={{
-              position: 'absolute',
-              top: -200,
-              left: i * stripe * 2 - 120,
-              width: stripe,
-              height: 600,
-              backgroundColor: placeholder.light,
-              transform: [{ rotate: '45deg' }],
-            }}
-          />
-        ))}
-      </View>
-      {label ? (
+      <Svg width="100%" height="100%" style={StyleSheet.absoluteFill} pointerEvents="none">
+        <Defs>
+          <Pattern
+            id={`stripes-${stripe}`}
+            patternUnits="userSpaceOnUse"
+            width={period}
+            height={period}
+            patternTransform="rotate(45)"
+          >
+            <Rect x={0} y={0} width={stripe} height={period} fill={placeholder.light} />
+          </Pattern>
+        </Defs>
+        <Rect x={0} y={0} width="100%" height="100%" fill={`url(#stripes-${stripe})`} />
+      </Svg>
+      {uri ? (
+        <ExpoImage
+          source={{ uri }}
+          style={StyleSheet.absoluteFill}
+          contentFit="cover"
+          transition={150}
+          cachePolicy="memory-disk"
+        />
+      ) : label ? (
         <RNText style={{ fontFamily: mono, fontSize: 10, color: colors.muted }}>{label}</RNText>
       ) : null}
     </View>
   );
-}
+});
 
 // ─────────────────────────────────────────────────────────────
 // Controls

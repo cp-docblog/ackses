@@ -32,7 +32,48 @@ export type Seller = {
   ordersCount: number;
   responseTime: string;
   city: { en: string; ar: string };
+  /** E.164, e.g. +9647701234412. Drives the Call button. */
+  phone?: string | null;
+  /** Digits only, no plus — the form wa.me expects. Drives Message. */
+  whatsapp?: string | null;
+  payoutMethod?: PayoutMethod | null;
 };
+
+export type PayoutMethod = {
+  kind: 'zaincash' | 'bank' | 'cash';
+  /** Wallet number, IBAN, or the pickup note. */
+  account: string;
+  holder: string;
+};
+
+export type Payout = {
+  id: string;
+  amountIqd: number;
+  status: 'pending' | 'paid' | 'rejected';
+  createdAt: string;
+};
+
+export type Address = {
+  id: string;
+  label: string;
+  line: string;
+  city: { en: string; ar: string };
+  phone: string;
+};
+
+export type NotificationPrefs = { orders: boolean; alerts: boolean; marketing: boolean };
+
+export type Profile = {
+  id: string;
+  fullName: string;
+  phone: string | null;
+  city: { en: string; ar: string };
+  addresses: Address[];
+  notificationPrefs: NotificationPrefs;
+  paymentPreference: 'cod' | 'card';
+};
+
+export type BulkTier = { minQty: number; maxQty: number | null; priceIqd: number };
 
 export type Shop = {
   id: string;
@@ -50,6 +91,7 @@ export type Shop = {
   followers: string;
   hours: string;
   deliveryFee: number;
+  phone?: string | null;
 };
 
 export type Product = {
@@ -71,6 +113,11 @@ export type Product = {
   specs: { key: { en: string; ar: string }; value: { en: string; ar: string } }[];
   /** Vehicle ranges this part fits — drives the "Fits" badge. */
   fitments: { make: string; model: string; yearFrom: number; yearTo: number }[];
+  /** Quantity price breaks, ascending by minQty. */
+  bulkTiers?: BulkTier[];
+  description?: string;
+  deliveryOption?: number;
+  imageUrls?: string[];
 };
 
 export type Review = {
@@ -102,7 +149,16 @@ export type Order = {
   /** ISO timestamps keyed by the status they mark. */
   timeline: Partial<Record<OrderStatus, string>>;
   paymentMethod: 'cod' | 'card';
+  createdAt?: string;
+  /** Latest note the seller attached to a status change, if any. */
+  note?: string | null;
+  /** Localized shop name, folded in for the buyer's order list. */
+  shopName?: { en: string; ar: string };
+  address?: string;
+  phone?: string;
 };
+
+export type SortKey = 'relevance' | 'price_asc' | 'price_desc' | 'newest';
 
 export type SavedSearch = {
   id: string;

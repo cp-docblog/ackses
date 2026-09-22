@@ -16,7 +16,7 @@ export function conditionLabel(condition: ProductWithFit['condition'], t: Return
 }
 
 /** Two-up grid card used on Listings and the shop's product tab. */
-export function ProductGridCard({
+export const ProductGridCard = React.memo(function ProductGridCard({
   product,
   onPress,
   showMeta = true,
@@ -46,7 +46,7 @@ export function ProductGridCard({
         opacity: pressed ? 0.85 : 1,
       })}
     >
-      <PhotoPlaceholder label={product.imageLabel} style={{ height: imageHeight, width: '100%' }} />
+      <PhotoPlaceholder label={product.imageLabel} uri={product.imageUrls?.[0] ?? product.imageUrl} style={{ height: imageHeight, width: '100%' }} />
       <View style={{ position: 'absolute', top: 8, ...start }}>
         {product.fits ? (
           <Badge label={t.fits} icon={<Icon name="check" size={10} strokeWidth={3} />} />
@@ -93,7 +93,7 @@ export function ProductGridCard({
       </View>
     </Pressable>
   );
-}
+});
 
 /** Horizontal row card — image search results and the seller's product list. */
 export function ProductRow({
@@ -119,7 +119,7 @@ export function ProductRow({
         borderRadius: radius['2xl'],
       }}
     >
-      <PhotoPlaceholder style={{ width: 72, height: 72, borderRadius: radius.lg }} stripe={6} />
+      <PhotoPlaceholder uri={product.imageUrls?.[0] ?? product.imageUrl} style={{ width: 72, height: 72, borderRadius: radius.lg }} stripe={6} />
       <View style={{ flex: 1 }}>
         <Text size={13} weight={600} lineHeight={1.3} numberOfLines={2}>
           {pick(product.name, lang)}

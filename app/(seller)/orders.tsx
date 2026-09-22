@@ -7,7 +7,7 @@ import { Badge, Button, Card, Chip, EmptyState, HScroll, Loading, Row, Text } fr
 import { useT } from '../../src/i18n';
 import { formatIqd, pick } from '../../src/lib/format';
 import { useShopOrders } from '../../src/hooks/queries';
-import { DEMO_SHOP_ID } from '../../src/data/repository';
+import { useMyShopId } from '../../src/hooks/useMyShop';
 import { ORDER_STATUSES } from '../../src/data/types';
 import { colors } from '../../src/theme';
 
@@ -15,9 +15,10 @@ import { colors } from '../../src/theme';
 export default function SellerOrders() {
   const { t, lang } = useT();
   const insets = useSafeAreaInsets();
+  const shopId = useMyShopId();
   const [chip, setChip] = useState(0);
 
-  const { data: orders, isPending } = useShopOrders(DEMO_SHOP_ID);
+  const { data: orders, isPending } = useShopOrders(shopId);
 
   /** Chips are All · New · Preparing · Shipped · Delivered. */
   const visible = useMemo(() => {

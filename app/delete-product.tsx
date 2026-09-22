@@ -7,7 +7,7 @@ import { Button, Row, Text } from '../src/components/ui';
 import { useT } from '../src/i18n';
 import { pick } from '../src/lib/format';
 import { useDeleteProduct, useProduct } from '../src/hooks/queries';
-import { DEMO_SHOP_ID } from '../src/data/repository';
+import { useMyShopId } from '../src/hooks/useMyShop';
 import { useStore } from '../src/state/store';
 import { colors, radius } from '../src/theme';
 
@@ -17,7 +17,7 @@ export default function DeleteProduct() {
   const { t, lang } = useT();
   const { vehicle } = useStore();
   const { data: product } = useProduct(id ?? '', vehicle);
-  const remove = useDeleteProduct(DEMO_SHOP_ID);
+  const remove = useDeleteProduct(useMyShopId());
 
   const confirm = async () => {
     if (id) await remove.mutateAsync(id);

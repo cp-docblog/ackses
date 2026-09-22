@@ -3,13 +3,12 @@ import { Pressable, ScrollView, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useComingSoon } from '../../src/components/ComingSoon';
 import { Icon } from '../../src/components/Icon';
 import { Badge, Chip, EmptyState, Loading, PhotoPlaceholder, Row, Text } from '../../src/components/ui';
 import { useT } from '../../src/i18n';
 import { formatIqd, pick } from '../../src/lib/format';
 import { useShop, useShopProducts } from '../../src/hooks/queries';
-import { DEMO_SHOP_ID } from '../../src/data/repository';
+import { useMyShopId } from '../../src/hooks/useMyShop';
 import { useStore } from '../../src/state/store';
 import { colors, radius } from '../../src/theme';
 
@@ -17,13 +16,13 @@ import { colors, radius } from '../../src/theme';
 export default function SellerShop() {
   const { t, lang, row, font, isRTL } = useT();
   const insets = useSafeAreaInsets();
-  const { show } = useComingSoon();
   const { vehicle } = useStore();
   const [stockChip, setStockChip] = useState(0);
   const [query, setQuery] = useState('');
 
-  const { data: shop } = useShop(DEMO_SHOP_ID);
-  const { data: products, isPending } = useShopProducts(DEMO_SHOP_ID, vehicle);
+  const shopId = useMyShopId();
+  const { data: shop } = useShop(shopId);
+  const { data: products, isPending } = useShopProducts(shopId, vehicle);
 
   const visible = useMemo(() => {
     const text = query.trim().toLowerCase();
@@ -72,7 +71,7 @@ export default function SellerShop() {
         </View>
         <Pressable
           accessibilityRole="button"
-          onPress={() => show('generic')}
+          onPress={() => router.push('/edit-shop')}
           style={{
             height: 40,
             paddingHorizontal: 14,

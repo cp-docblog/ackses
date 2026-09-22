@@ -13,7 +13,9 @@ import {
   BUYER_ORDERS,
   GARAGE,
   ORDERS,
+  PAYOUTS,
   PRODUCTS,
+  PROFILE,
   REVIEWS,
   SAVED_SEARCHES,
   SELLER,
@@ -21,11 +23,16 @@ import {
 } from './fixtures';
 import {
   fitsVehicle,
+  type Address,
   type Condition,
+  type NotificationPrefs,
   type Order,
   type OrderStatus,
+  type Payout,
+  type PayoutMethod,
   type Product,
   type ProductFilters,
+  type Profile,
   type Review,
   type SavedSearch,
   type Seller,
@@ -60,6 +67,10 @@ type ProductRow = {
   specs: Product['specs'] | null;
   fitments: Product['fitments'] | null;
   fits?: boolean;
+  bulk_tiers?: Product['bulkTiers'] | null;
+  description?: string | null;
+  delivery_option?: number | null;
+  image_urls?: string[] | null;
 };
 
 function toProduct(row: ProductRow): ProductWithFit {
@@ -79,6 +90,10 @@ function toProduct(row: ProductRow): ProductWithFit {
     specs: row.specs ?? [],
     fitments: row.fitments ?? [],
     fits: row.fits ?? false,
+    bulkTiers: row.bulk_tiers ?? [],
+    description: row.description ?? '',
+    deliveryOption: row.delivery_option ?? 0,
+    imageUrls: row.image_urls ?? (row.image_url ? [row.image_url] : []),
   };
 }
 
@@ -230,7 +245,38 @@ export type NewProduct = {
   deliveryOptionIndex: number;
   fitments: Product['fitments'];
   imageUris: string[];
+  bulkTiers: Product['bulkTiers'];
 };
+
+/**
+ * Pushes local photo URIs into the `product-photos` bucket and returns their
+ * public URLs. Files are keyed under the signed-in user's folder, which is
+ * what the storage policy checks. On fixtures the local URIs pass through.
+ */
+export async function uploadProductPhotos(uris: string[]): Promise<string[]> {
+  if (!isSupabaseConfigured || uris.length === 0) return uris;
+  const db = requireSupabase();
+  const { data: auth } = await db.auth.getUser();
+  const owner = auth.user?.id;
+  if (!owner) throw new Error('Not signed in');
+
+  const urls: string[] = [];
+  for (const uri of uris) {
+    if (/^https?:/.test(uri)) {
+      urls.push(uri);
+      continue;
+    }
+    const response = await fetch(uri);
+    const bytes = await response.arrayBuffer();
+    const ext = uri.split('?')[0].split('.').pop()?.toLowerCase() || 'jpg';
+    const contentType = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+    const path = `${owner}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext === 'jpeg' ? 'jpg' : ext}`;
+    const { error } = await db.storage.from('product-photos').upload(path, bytes, { contentType, upsert: false });
+    if (error) throw error;
+    urls.push(db.storage.from('product-photos').getPublicUrl(path).data.publicUrl);
+  }
+  return urls;
+}
 
 export async function createProduct(input: NewProduct): Promise<string> {
   if (!isSupabaseConfigured) {
@@ -248,13 +294,18 @@ export async function createProduct(input: NewProduct): Promise<string> {
       stock: input.stock,
       imageLabel: input.name.en.toLowerCase().slice(0, 18),
       imageUrl: input.imageUris[0] ?? null,
+      imageUrls: input.imageUris,
       specs: [],
       fitments: input.fitments,
+      bulkTiers: input.bulkTiers,
+      description: input.description,
+      deliveryOption: input.deliveryOptionIndex,
     });
     return id;
   }
 
   const db = requireSupabase();
+  const urls = await uploadProductPhotos(input.imageUris);
   const { data, error } = await db
     .from('products')
     .insert({
@@ -269,9 +320,11 @@ export async function createProduct(input: NewProduct): Promise<string> {
       price_iqd: input.priceIqd,
       stock: input.stock,
       image_label: input.name.en.toLowerCase().slice(0, 18),
-      image_url: input.imageUris[0] ?? null,
+      image_url: urls[0] ?? null,
+      image_urls: urls,
       description: input.description,
       delivery_option: input.deliveryOptionIndex,
+      bulk_tiers: input.bulkTiers ?? [],
       specs: [],
     })
     .select('id')
@@ -294,6 +347,244 @@ export async function createProduct(input: NewProduct): Promise<string> {
   }
 
   return productId;
+}
+
+export async function updateProduct(id: string, input: NewProduct): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const product = PRODUCTS.find((p) => p.id === id);
+    if (product) {
+      Object.assign(product, {
+        name: input.name,
+        oem: input.oem,
+        brand: input.brand,
+        categoryIndex: input.categoryIndex,
+        subcategoryIndex: input.subcategoryIndex,
+        condition: input.condition,
+        priceIqd: input.priceIqd,
+        stock: input.stock,
+        fitments: input.fitments,
+        bulkTiers: input.bulkTiers,
+        description: input.description,
+        deliveryOption: input.deliveryOptionIndex,
+        imageUrls: input.imageUris,
+        imageUrl: input.imageUris[0] ?? null,
+      });
+    }
+    return;
+  }
+  const db = requireSupabase();
+  const urls = await uploadProductPhotos(input.imageUris);
+  const { error } = await db
+    .from('products')
+    .update({
+      name_en: input.name.en,
+      name_ar: input.name.ar,
+      oem: input.oem,
+      brand: input.brand,
+      category_position: input.categoryIndex,
+      subcategory_position: input.subcategoryIndex,
+      condition: input.condition,
+      price_iqd: input.priceIqd,
+      stock: input.stock,
+      image_url: urls[0] ?? null,
+      image_urls: urls,
+      description: input.description,
+      delivery_option: input.deliveryOptionIndex,
+      bulk_tiers: input.bulkTiers ?? [],
+    })
+    .eq('id', id);
+  if (error) throw error;
+
+  // Fitments are replaced wholesale; the set is small and the form edits it as one.
+  const { error: clearError } = await db.from('product_fitments').delete().eq('product_id', id);
+  if (clearError) throw clearError;
+  if (input.fitments.length) {
+    const { error: fitError } = await db.from('product_fitments').insert(
+      input.fitments.map((f) => ({ product_id: id, make: f.make, model: f.model, year_from: f.yearFrom, year_to: f.yearTo })),
+    );
+    if (fitError) throw fitError;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Profile
+// ─────────────────────────────────────────────────────────────
+
+type ProfileRow = {
+  id: string;
+  full_name: string;
+  phone: string | null;
+  city_en: string;
+  city_ar: string;
+  addresses: Address[] | null;
+  notification_prefs: NotificationPrefs | null;
+  payment_preference: 'cod' | 'card' | null;
+};
+
+function toProfile(row: ProfileRow): Profile {
+  return {
+    id: row.id,
+    fullName: row.full_name,
+    phone: row.phone,
+    city: { en: row.city_en, ar: row.city_ar },
+    addresses: row.addresses ?? [],
+    notificationPrefs: row.notification_prefs ?? { orders: true, alerts: true, marketing: false },
+    paymentPreference: row.payment_preference ?? 'cod',
+  };
+}
+
+export async function getProfile(): Promise<Profile> {
+  if (!isSupabaseConfigured) return PROFILE;
+  const db = requireSupabase();
+  const { data: auth } = await db.auth.getUser();
+  if (!auth.user) throw new Error('Not signed in');
+  const { data, error } = await db.from('profiles').select('*').eq('id', auth.user.id).single();
+  if (error) throw error;
+  return toProfile(data as ProfileRow);
+}
+
+export async function updateProfile(patch: Partial<Omit<Profile, 'id'>>): Promise<void> {
+  if (!isSupabaseConfigured) {
+    Object.assign(PROFILE, patch);
+    return;
+  }
+  const db = requireSupabase();
+  const { data: auth } = await db.auth.getUser();
+  if (!auth.user) throw new Error('Not signed in');
+  const row: Record<string, unknown> = {};
+  if (patch.fullName !== undefined) row.full_name = patch.fullName;
+  if (patch.phone !== undefined) row.phone = patch.phone;
+  if (patch.city) {
+    row.city_en = patch.city.en;
+    row.city_ar = patch.city.ar;
+  }
+  if (patch.addresses) row.addresses = patch.addresses;
+  if (patch.notificationPrefs) row.notification_prefs = patch.notificationPrefs;
+  if (patch.paymentPreference) row.payment_preference = patch.paymentPreference;
+  const { error } = await db.from('profiles').update(row).eq('id', auth.user.id);
+  if (error) throw error;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Follows
+// ─────────────────────────────────────────────────────────────
+
+const localFollows = new Set<string>();
+
+export async function isFollowingShop(shopId: string): Promise<boolean> {
+  if (!isSupabaseConfigured) return localFollows.has(shopId);
+  const db = requireSupabase();
+  const { data: auth } = await db.auth.getUser();
+  if (!auth.user) return false;
+  const { data, error } = await db
+    .from('shop_follows')
+    .select('shop_id')
+    .eq('shop_id', shopId)
+    .eq('follower_id', auth.user.id)
+    .maybeSingle();
+  if (error) throw error;
+  return !!data;
+}
+
+export async function setFollowingShop(shopId: string, following: boolean): Promise<void> {
+  if (!isSupabaseConfigured) {
+    if (following) localFollows.add(shopId);
+    else localFollows.delete(shopId);
+    return;
+  }
+  const db = requireSupabase();
+  const { data: auth } = await db.auth.getUser();
+  if (!auth.user) throw new Error('Not signed in');
+  const { error } = following
+    ? await db.from('shop_follows').upsert({ shop_id: shopId, follower_id: auth.user.id })
+    : await db.from('shop_follows').delete().eq('shop_id', shopId).eq('follower_id', auth.user.id);
+  if (error) throw error;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Seller-side: shop, contact, payouts
+// ─────────────────────────────────────────────────────────────
+
+export type ShopPatch = Partial<Pick<Shop, 'name' | 'city' | 'address' | 'about' | 'hours' | 'deliveryFee' | 'phone'>>;
+
+export async function updateShop(id: string, patch: ShopPatch): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const shop = SHOPS.find((s) => s.id === id);
+    if (shop) Object.assign(shop, patch);
+    return;
+  }
+  const row: Record<string, unknown> = {};
+  if (patch.name) {
+    row.name_en = patch.name.en;
+    row.name_ar = patch.name.ar;
+    row.initial = patch.name.en.charAt(0).toUpperCase();
+  }
+  if (patch.city) {
+    row.city_en = patch.city.en;
+    row.city_ar = patch.city.ar;
+  }
+  if (patch.address) {
+    row.address_en = patch.address.en;
+    row.address_ar = patch.address.ar;
+  }
+  if (patch.about) {
+    row.about_en = patch.about.en;
+    row.about_ar = patch.about.ar;
+  }
+  if (patch.hours !== undefined) row.hours = patch.hours;
+  if (patch.deliveryFee !== undefined) row.delivery_fee_iqd = patch.deliveryFee;
+  if (patch.phone !== undefined) row.phone = patch.phone;
+  const { error } = await requireSupabase().from('shops').update(row).eq('id', id);
+  if (error) throw error;
+}
+
+export async function updateSellerContact(
+  sellerId: string,
+  patch: { phone?: string | null; whatsapp?: string | null; payoutMethod?: PayoutMethod | null },
+): Promise<void> {
+  if (!isSupabaseConfigured) {
+    Object.assign(SELLER, patch);
+    return;
+  }
+  const row: Record<string, unknown> = {};
+  if (patch.phone !== undefined) row.phone = patch.phone;
+  if (patch.whatsapp !== undefined) row.whatsapp = patch.whatsapp;
+  if (patch.payoutMethod !== undefined) row.payout_method = patch.payoutMethod ?? {};
+  const { error } = await requireSupabase().from('sellers').update(row).eq('id', sellerId);
+  if (error) throw error;
+}
+
+export async function listPayouts(sellerId: string): Promise<Payout[]> {
+  if (!isSupabaseConfigured) return PAYOUTS;
+  const { data, error } = await requireSupabase()
+    .from('payouts')
+    .select('id, amount_iqd, status, created_at')
+    .eq('seller_id', sellerId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data as { id: string; amount_iqd: number; status: Payout['status']; created_at: string }[]).map((r) => ({
+    id: r.id,
+    amountIqd: r.amount_iqd,
+    status: r.status,
+    createdAt: r.created_at,
+  }));
+}
+
+export async function requestPayout(sellerId: string, amountIqd: number, method: PayoutMethod): Promise<void> {
+  if (!isSupabaseConfigured) {
+    PAYOUTS.unshift({ id: `local-${Date.now()}`, amountIqd, status: 'pending', createdAt: new Date().toISOString() });
+    return;
+  }
+  const { error } = await requireSupabase()
+    .from('payouts')
+    .insert({ seller_id: sellerId, amount_iqd: amountIqd, method, status: 'pending' });
+  if (error) throw error;
+}
+
+export async function createReport(sellerId: string, reason: string, details: string): Promise<void> {
+  if (!isSupabaseConfigured) return;
+  const { error } = await requireSupabase().from('reports').insert({ seller_id: sellerId, reason, details });
+  if (error) throw error;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -320,6 +611,7 @@ type ShopRow = {
   followers: string;
   hours: string;
   delivery_fee_iqd: number;
+  phone?: string | null;
 };
 
 function toShop(row: ShopRow): Shop {
@@ -339,6 +631,7 @@ function toShop(row: ShopRow): Shop {
     followers: row.followers,
     hours: row.hours,
     deliveryFee: row.delivery_fee_iqd,
+    phone: row.phone ?? null,
   };
 }
 
@@ -377,7 +670,11 @@ export async function getSeller(id: string): Promise<Seller> {
     response_time: string;
     city_en: string;
     city_ar: string;
+    phone?: string | null;
+    whatsapp?: string | null;
+    payout_method?: PayoutMethod | Record<string, never> | null;
   };
+  const payout = row.payout_method && 'kind' in row.payout_method ? (row.payout_method as PayoutMethod) : null;
   return {
     id: row.id,
     name: { en: row.name_en, ar: row.name_ar },
@@ -388,6 +685,9 @@ export async function getSeller(id: string): Promise<Seller> {
     ordersCount: row.orders_count,
     responseTime: row.response_time,
     city: { en: row.city_en, ar: row.city_ar },
+    phone: row.phone ?? null,
+    whatsapp: row.whatsapp ?? null,
+    payoutMethod: payout,
   };
 }
 
@@ -525,6 +825,12 @@ type OrderRow = {
   payment_method: 'cod' | 'card';
   items: Order['items'] | null;
   timeline: Order['timeline'] | null;
+  created_at?: string;
+  shop_name_en?: string;
+  shop_name_ar?: string;
+  last_note?: string | null;
+  address?: string;
+  phone?: string;
 };
 
 function toOrder(row: OrderRow): Order {
@@ -539,6 +845,11 @@ function toOrder(row: OrderRow): Order {
     paymentMethod: row.payment_method,
     items: row.items ?? [],
     timeline: row.timeline ?? {},
+    createdAt: row.created_at,
+    note: row.last_note ?? null,
+    shopName: row.shop_name_en ? { en: row.shop_name_en, ar: row.shop_name_ar ?? row.shop_name_en } : undefined,
+    address: row.address ?? '',
+    phone: row.phone ?? '',
   };
 }
 
@@ -565,7 +876,7 @@ export async function listBuyerOrders(): Promise<Order[]> {
 
 export async function getOrder(id: string): Promise<Order> {
   if (!isSupabaseConfigured) {
-    return ORDERS.find((o) => o.id === id) ?? ORDERS[0];
+    return ORDERS.find((o) => o.id === id) ?? BUYER_ORDERS.find((o) => o.id === id) ?? ORDERS[0];
   }
   const { data, error } = await requireSupabase()
     .from('orders_with_items')
@@ -606,21 +917,30 @@ export async function placeOrder(input: {
   totalIqd: number;
   city: { en: string; ar: string };
   paymentMethod: 'cod' | 'card';
+  address: string;
+  phone: string;
 }): Promise<string> {
   if (!isSupabaseConfigured) {
     const id = `local-${Date.now()}`;
-    ORDERS.unshift({
+    const shop = SHOPS.find((s) => s.id === input.shopId);
+    const created: Order = {
       id,
       reference: `AK-${Math.floor(10000 + Math.random() * 89999)}`,
       shopId: input.shopId,
-      buyerName: { en: 'Mustafa Al-Jabouri', ar: 'مصطفى الجبوري' },
+      buyerName: { en: PROFILE.fullName, ar: PROFILE.fullName },
       city: input.city,
       status: 'received',
       totalIqd: input.totalIqd,
       paymentMethod: input.paymentMethod,
       items: input.items,
       timeline: { received: new Date().toISOString() },
-    });
+      createdAt: new Date().toISOString(),
+      shopName: shop?.name,
+      address: input.address,
+      phone: input.phone,
+    };
+    ORDERS.unshift(created);
+    BUYER_ORDERS.unshift(created);
     return id;
   }
   const { data, error } = await requireSupabase()
@@ -631,6 +951,8 @@ export async function placeOrder(input: {
       p_city_ar: input.city.ar,
       p_payment_method: input.paymentMethod,
       p_items: input.items,
+      p_address: input.address,
+      p_phone: input.phone,
     })
     .single();
   if (error) throw error;

@@ -9,7 +9,7 @@ import { Badge, Button, Card, Row, SectionLabel, StatTile, Text } from '../../sr
 import { useT } from '../../src/i18n';
 import { formatIqd, pick } from '../../src/lib/format';
 import { useShop, useShopOrders } from '../../src/hooks/queries';
-import { DEMO_SHOP_ID } from '../../src/data/repository';
+import { useMyShopId } from '../../src/hooks/useMyShop';
 import { SELLER_BALANCE } from '../../src/data/fixtures';
 import { ORDER_STATUSES } from '../../src/data/types';
 import { colors, radius } from '../../src/theme';
@@ -25,8 +25,9 @@ import { colors, radius } from '../../src/theme';
 export default function SellerDashboard() {
   const { t, lang, row } = useT();
   const insets = useSafeAreaInsets();
-  const { data: shop } = useShop(DEMO_SHOP_ID);
-  const { data: orders } = useShopOrders(DEMO_SHOP_ID);
+  const shopId = useMyShopId();
+  const { data: shop } = useShop(shopId);
+  const { data: orders } = useShopOrders(shopId);
 
   const openOrders = orders?.filter((order) => order.status !== 'delivered') ?? [];
 

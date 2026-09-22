@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { ONBOARDED_KEY } from './index';
 import { Icon } from '../src/components/Icon';
 import { LanguageToggle, Logo } from '../src/components/chrome';
 import { Button, Chip, HScroll, Row, SectionLabel, Text } from '../src/components/ui';
 import { useT } from '../src/i18n';
 import { vehicleLabel } from '../src/lib/format';
 import { useStore } from '../src/state/store';
+import { addVehicle } from '../src/data/repository';
+import { useQueryClient } from '@tanstack/react-query';
+import { keys } from '../src/hooks/queries';
 import { MAKES, MODELS, YEARS } from '../src/data/types';
 import { colors, radius } from '../src/theme';
 
@@ -18,7 +18,9 @@ import { colors, radius } from '../src/theme';
 export default function Onboarding() {
   const { t, row } = useT();
   const insets = useSafeAreaInsets();
-  const { vehicle, setVehicle } = useStore();
+  const { vehicle, setVehicle, setOnboarded } = useStore();
+  const client = useQueryClient();
+  const [saving, setSaving] = useState(false);
 
   const [make, setMake] = useState(vehicle?.make ?? 'Toyota');
   const [model, setModel] = useState(vehicle?.model ?? 'Camry');
@@ -32,9 +34,23 @@ export default function Onboarding() {
   };
 
   const commit = async () => {
-    setVehicle({ id: vehicle?.id ?? 'primary', make, model, year, vin: vehicle?.vin ?? null });
-    await AsyncStorage.setItem(ONBOARDED_KEY, 'true').catch(() => {});
-    router.replace('/(buyer)');
+    setSaving(true);
+    try {
+      // Save to the account's garage when signed in; the local copy drives the
+      // fitment badge immediately either way.
+      let saved: typeof vehicle = { id: vehicle?.id ?? 'primary', make, model, year, vin: vehicle?.vin ?? null };
+      try {
+        saved = await addVehicle({ make, model, year, vin: null });
+      } catch {
+        // Offline or not signed in — keep the local car; it syncs on next add.
+      }
+      setVehicle(saved);
+      client.invalidateQueries({ queryKey: keys.garage() });
+      setOnboarded(true);
+      router.replace('/(buyer)');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -134,7 +150,7 @@ export default function Onboarding() {
         <Text size={13} color={colors.muted} style={{ flex: 1 }}>
           {vehicleLabel({ make, model, year })}
         </Text>
-        <Button title={t.continue} onPress={commit} style={{ paddingHorizontal: 28 }} />
+        <Button title={t.continue} onPress={commit} disabled={saving} style={{ paddingHorizontal: 28 }} />
       </Row>
     </View>
   );
