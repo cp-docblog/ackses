@@ -54,7 +54,11 @@
       ]
     ],
     "extra": {
-      "router": {}
-    }
+      "router": {},
+      "eas": {
+        "projectId": "4a0fd8fb-1d4a-4ef0-bee8-fa9b4e2f2f08"
+      }
+    },
+    "owner": "cp-devcode"
   }
 }
