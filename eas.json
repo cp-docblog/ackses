@@ -20,7 +20,6 @@
       "android": {
         "buildType": "apk"
       },
-      "channel": "preview",
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://pxwkyrlmdoocznbimqlj.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_XVWYJSNPFHNoXs9vQjYeeQ_8hBdJlO9"
@@ -31,7 +30,6 @@
       "android": {
         "buildType": "app-bundle"
       },
-      "channel": "production",
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://pxwkyrlmdoocznbimqlj.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_XVWYJSNPFHNoXs9vQjYeeQ_8hBdJlO9"
