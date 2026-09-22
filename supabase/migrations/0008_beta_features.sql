@@ -17,10 +17,14 @@ alter table public.shops
 
 -- [{ "minQty": 4, "maxQty": 9, "priceIqd": 41000 }]
 alter table public.products
-  add column if not exists bulk_tiers jsonb not null default '[]'::jsonb;
+  add column if not exists bulk_tiers jsonb not null default '[]'::jsonb,
+  add column if not exists image_urls text[] not null default '{}';
 
--- The read model has to expose the new column too.
-create or replace view public.products_with_fitments
+-- The read model has to expose the new columns too. It selects `p.*`, so the
+-- new base columns shift positions — and a view cannot be replaced with a
+-- different column order, only dropped and recreated.
+drop view if exists public.products_with_fitments;
+create view public.products_with_fitments
 with (security_invoker = true) as
 select
   p.*,
@@ -35,9 +39,11 @@ from public.products p;
 -- Payouts: a seller asks for their balance to be sent out
 -- ─────────────────────────────────────────────────────────────
 
-create type public.payout_status as enum ('pending', 'paid', 'rejected');
+do $$ begin
+  create type public.payout_status as enum ('pending', 'paid', 'rejected');
+exception when duplicate_object then null; end $$;
 
-create table public.payouts (
+create table if not exists public.payouts (
   id uuid primary key default gen_random_uuid(),
   seller_id uuid not null references public.sellers on delete cascade,
   amount_iqd int not null check (amount_iqd > 0),
@@ -45,14 +51,16 @@ create table public.payouts (
   status public.payout_status not null default 'pending',
   created_at timestamptz not null default now()
 );
-create index payouts_seller_id_idx on public.payouts (seller_id, created_at desc);
+create index if not exists payouts_seller_id_idx on public.payouts (seller_id, created_at desc);
 
 alter table public.payouts enable row level security;
 
+drop policy if exists "a seller sees their own payouts" on public.payouts;
 create policy "a seller sees their own payouts"
   on public.payouts for select to authenticated
   using (exists (select 1 from public.sellers s where s.id = payouts.seller_id and s.user_id = auth.uid()));
 
+drop policy if exists "a seller requests their own payouts" on public.payouts;
 create policy "a seller requests their own payouts"
   on public.payouts for insert to authenticated
   with check (
@@ -64,7 +72,7 @@ create policy "a seller requests their own payouts"
 -- Reports: a buyer flags a seller
 -- ─────────────────────────────────────────────────────────────
 
-create table public.reports (
+create table if not exists public.reports (
   id uuid primary key default gen_random_uuid(),
   reporter_id uuid not null default auth.uid() references auth.users on delete cascade,
   seller_id uuid not null references public.sellers on delete cascade,
@@ -72,13 +80,15 @@ create table public.reports (
   details text not null default '',
   created_at timestamptz not null default now()
 );
-create index reports_seller_id_idx on public.reports (seller_id);
+create index if not exists reports_seller_id_idx on public.reports (seller_id);
 
 alter table public.reports enable row level security;
 
+drop policy if exists "a user sees their own reports" on public.reports;
 create policy "a user sees their own reports"
   on public.reports for select to authenticated using (reporter_id = auth.uid());
 
+drop policy if exists "a user files their own reports" on public.reports;
 create policy "a user files their own reports"
   on public.reports for insert to authenticated with check (reporter_id = auth.uid());
 
@@ -102,7 +112,8 @@ alter table public.orders
   add column if not exists address text not null default '',
   add column if not exists phone text not null default '';
 
-create or replace view public.orders_with_items
+drop view if exists public.orders_with_items;
+create view public.orders_with_items
 with (security_invoker = true) as
 select
   o.*,
@@ -164,15 +175,18 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 values ('product-photos', 'product-photos', true, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
 on conflict (id) do nothing;
 
+drop policy if exists "product photos are public" on storage.objects;
 create policy "product photos are public"
   on storage.objects for select to anon, authenticated
   using (bucket_id = 'product-photos');
 
 -- Files live under <user id>/..., so a seller can only write their own folder.
+drop policy if exists "a seller uploads into their own folder" on storage.objects;
 create policy "a seller uploads into their own folder"
   on storage.objects for insert to authenticated
   with check (bucket_id = 'product-photos' and (storage.foldername(name))[1] = auth.uid()::text);
 
+drop policy if exists "a seller replaces or removes their own photos" on storage.objects;
 create policy "a seller replaces or removes their own photos"
   on storage.objects for delete to authenticated
   using (bucket_id = 'product-photos' and (storage.foldername(name))[1] = auth.uid()::text);
