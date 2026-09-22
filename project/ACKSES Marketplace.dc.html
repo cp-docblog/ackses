@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet"><style>body{margin:0;background:#0b0b0b;color:#fff;font-family:Montserrat,Tajawal,sans-serif}a{color:#E30613}a:hover{color:#ff3b47}input{outline:none}*{scrollbar-width:none}</style></helmet>
+<div style="padding:32px 40px 60px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:1px solid #333;padding-bottom:20px">
+  <div>
+    <div style="display:flex;align-items:center;gap:12px"><div style="font-weight:800;font-size:26px;letter-spacing:2px"><span style="color:#E30613">A</span>CKSES</div><div style="font-size:11px;letter-spacing:3px;color:#A3A3A3">GET IN. <span style="color:#E30613">LEVEL UP.</span></div></div>
+    <div style="font-size:13px;color:#777;margin-top:6px;max-width:720px;line-height:1.5">Auto-parts marketplace, Iraq. Dark UI on #000 / #111, primary red #E30613, Montserrat + Tajawal. Every phone is live: tap through buttons, tabs and sheets. Bilingual toggle sits inside Onboarding, Buyer Profile and Seller Account; the Tweaks panel switches language and canvas/prototype mode.</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <sc-for list="{{ jump }}" as="j" hint-placeholder-count="4"><button onClick="{{ j.go }}" style="cursor:pointer;height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ j.border }};background:{{ j.bg }};color:#fff;font:600 12px Montserrat,sans-serif">{{ j.label }}</button></sc-for>
+  </div>
+</div>
+
+<sc-if value="{{ showBuyerHead }}" hint-placeholder-val="{{ true }}"><div style="font-size:12px;letter-spacing:3px;color:#A3A3A3;font-weight:600">BUYER APP</div></sc-if>
+<div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start">
+
+<!-- ONBOARDING -->
+<sc-if value="{{ show.onboarding }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Onboarding" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">01 · Onboarding — my car</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding:64px 20px 40px;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:auto -120px -160px auto;width:420px;height:420px;border-radius:50%;background:radial-gradient(closest-side,rgba(227,6,19,.28),transparent)"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="font-weight:800;font-size:22px;letter-spacing:2px"><span style="color:#E30613">A</span>CKSES</div>
+    <div style="display:flex;border:1px solid #333;border-radius:20px;overflow:hidden">
+      <button onClick="{{ setEn }}" style="cursor:pointer;height:32px;padding:0 12px;border:0;background:{{ enBg }};color:#fff;font:600 12px Montserrat,sans-serif">EN</button>
+      <button onClick="{{ setAr }}" style="cursor:pointer;height:32px;padding:0 12px;border:0;background:{{ arBg }};color:#fff;font:700 13px Tajawal,sans-serif">ع</button>
+    </div>
+  </div>
+  <div style="margin-top:36px;font-size:26px;font-weight:700;line-height:1.2">{{ t.onbTitle }}</div>
+  <div style="margin-top:8px;font-size:14px;color:#A3A3A3;line-height:1.5">{{ t.onbSub }}</div>
+  <div style="margin-top:26px;font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.make }}</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
+    <sc-for list="{{ makes }}" as="m" hint-placeholder-count="6"><button onClick="{{ m.pick }}" style="cursor:pointer;height:48px;border-radius:12px;border:1px solid {{ m.border }};background:{{ m.bg }};color:#fff;font:600 13px Montserrat,Tajawal,sans-serif">{{ m.name }}</button></sc-for>
+  </div>
+  <div style="margin-top:20px;font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.model }}</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+    <sc-for list="{{ models }}" as="m" hint-placeholder-count="4"><button onClick="{{ m.pick }}" style="cursor:pointer;height:40px;padding:0 16px;border-radius:20px;border:1px solid {{ m.border }};background:{{ m.bg }};color:#fff;font:500 13px Montserrat,Tajawal,sans-serif">{{ m.name }}</button></sc-for>
+  </div>
+  <div style="margin-top:20px;font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.year }}</div>
+  <div style="display:flex;gap:8px;margin-top:10px;overflow:auto;padding-bottom:4px">
+    <sc-for list="{{ years }}" as="y" hint-placeholder-count="6"><button onClick="{{ y.pick }}" style="cursor:pointer;flex:none;height:40px;width:64px;border-radius:20px;border:1px solid {{ y.border }};background:{{ y.bg }};color:#fff;font:600 13px Montserrat,sans-serif">{{ y.name }}</button></sc-for>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;margin-top:22px"><div style="flex:1;height:1px;background:#333"></div><div style="font-size:12px;color:#A3A3A3">{{ t.or }}</div><div style="flex:1;height:1px;background:#333"></div></div>
+  <button onClick="{{ goVin }}" style="cursor:pointer;margin-top:14px;height:48px;border-radius:12px;border:1px solid #333;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font:600 13px Montserrat,Tajawal,sans-serif"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 10v4M11 10v4M15 10v4"></path></svg>{{ t.vinCta }}</button>
+  <div style="margin-top:auto"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px">
+    <div style="font-size:13px;color:#A3A3A3">{{ carLabel }}</div>
+    <button onClick="{{ goHome }}" style="cursor:pointer;height:52px;padding:0 28px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 14px Montserrat,Tajawal,sans-serif">{{ t.continue }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- VIN SHEET -->
+<sc-if value="{{ show.vin }}" hint-placeholder-val="{{ true }}"><div data-screen-label="VIN lookup" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">01b · VIN / chassis lookup (sheet)</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:64px">
+  <div style="padding:0 20px;font-weight:800;font-size:22px;letter-spacing:2px;opacity:.35"><span style="color:#E30613">A</span>CKSES</div>
+  <div style="margin-top:auto;background:#111;border-radius:28px 28px 0 0;padding:14px 20px 44px;border-top:1px solid #333">
+    <div style="width:40px;height:4px;border-radius:2px;background:#333;margin:0 auto 18px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:18px;font-weight:700">{{ t.vinTitle }}</div><button onClick="{{ goOnboarding }}" style="cursor:pointer;width:44px;height:44px;border-radius:22px;border:0;background:#1a1a1a;color:#fff;font-size:18px">×</button></div>
+    <div style="font-size:13px;color:#A3A3A3;margin-top:4px;line-height:1.5">{{ t.vinSub }}</div>
+    <div style="margin-top:18px;display:grid;grid-template-columns:repeat(17,1fr);gap:3px;direction:ltr">
+      <sc-for list="{{ vinChars }}" as="c" hint-placeholder-count="17"><div style="height:40px;border-radius:6px;background:#000;border:1px solid {{ c.border }};display:flex;align-items:center;justify-content:center;font:700 13px Montserrat,monospace;color:#fff">{{ c.ch }}</div></sc-for>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button style="cursor:pointer;flex:1;height:44px;border-radius:12px;border:1px solid #333;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font:600 12px Montserrat,Tajawal,sans-serif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"></path></svg>{{ t.scanVin }}</button>
+      <button style="cursor:pointer;flex:1;height:44px;border-radius:12px;border:1px solid #333;background:#000;color:#fff;font:600 12px Montserrat,Tajawal,sans-serif">{{ t.pasteVin }}</button>
+    </div>
+    <div style="margin-top:18px;background:#000;border:1px solid #333;border-radius:16px;padding:14px;display:flex;gap:14px;align-items:center">
+      <div style="width:64px;height:48px;border-radius:10px;background:repeating-linear-gradient(135deg,#1a1a1a 0 6px,#111 6px 12px);flex:none;display:flex;align-items:center;justify-content:center;font:500 9px monospace;color:#A3A3A3">car</div>
+      <div style="flex:1"><div style="font-size:11px;letter-spacing:2px;color:#E30613;font-weight:700">{{ t.decoded }}</div><div style="font-size:15px;font-weight:700;margin-top:2px">Toyota Camry 2018</div><div style="font-size:12px;color:#A3A3A3">2.5L · XV70 · GCC spec</div></div>
+    </div>
+    <button onClick="{{ useDecoded }}" style="cursor:pointer;margin-top:16px;width:100%;height:52px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 14px Montserrat,Tajawal,sans-serif">{{ t.useCar }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- HOME / LISTINGS -->
+<sc-if value="{{ show.home }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Listings" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">02 · Listings — search, my-car filter, compatibility</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-weight:800;font-size:20px;letter-spacing:2px"><span style="color:#E30613">A</span>CKSES</div>
+    <div style="display:flex;gap:6px">
+      <button onClick="{{ goProfile }}" style="cursor:pointer;width:44px;height:44px;border-radius:22px;border:0;background:#111;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 20a8 8 0 0 1 16 0"></path><circle cx="12" cy="8" r="4"></circle></svg></button>
+      <button onClick="{{ goCart }}" style="cursor:pointer;width:44px;height:44px;border-radius:22px;border:0;background:#111;display:flex;align-items:center;justify-content:center;position:relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 4h2l2.5 11h11L21 7H6.5"></path><circle cx="9" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg><sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:4px;right:4px;min-width:18px;height:18px;border-radius:9px;background:#E30613;font:700 11px Montserrat,sans-serif;display:flex;align-items:center;justify-content:center;padding:0 5px">{{ cartCount }}</div></sc-if></button>
+    </div>
+  </div>
+  <div style="padding:14px 20px 0;display:flex;gap:8px">
+    <div style="flex:1;height:48px;border-radius:14px;background:#111;border:1px solid #333;display:flex;align-items:center;padding:0 14px;gap:10px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <div style="flex:1;font-size:13px;color:#A3A3A3">{{ t.searchPh }}</div>
+      <button onClick="{{ goImg }}" style="cursor:pointer;width:36px;height:36px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 8a2 2 0 0 1 2-2h2l2-2h4l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
+      <button onClick="{{ goVin }}" style="cursor:pointer;width:36px;height:36px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 10v4M11 10v4M15 10v4"></path></svg></button>
+    </div>
+    <button onClick="{{ goFilters }}" style="cursor:pointer;width:48px;height:48px;border-radius:14px;border:0;background:#E30613;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></button>
+  </div>
+  <div style="padding:12px 20px 0;display:flex;gap:8px;align-items:center;overflow:auto">
+    <button onClick="{{ goProfile }}" style="cursor:pointer;flex:none;white-space:nowrap;height:38px;padding:0 12px;border-radius:19px;border:1px solid #333;background:#111;color:#fff;display:flex;align-items:center;gap:8px;font:600 12px Montserrat,Tajawal,sans-serif"><div style="width:8px;height:8px;border-radius:4px;background:#E30613"></div>{{ carLabel }}<span style="color:#A3A3A3">▾</span></button>
+    <button onClick="{{ toggleFits }}" style="cursor:pointer;flex:none;white-space:nowrap;height:38px;padding:0 12px;border-radius:19px;border:1px solid {{ fitsBorder }};background:{{ fitsBg }};color:#fff;display:flex;align-items:center;gap:8px;font:600 12px Montserrat,Tajawal,sans-serif"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="m5 12 5 5L20 7"></path></svg>{{ t.fitsOnly }}</button>
+  </div>
+  <div style="flex:1;overflow:auto;padding-bottom:20px">
+    <div style="display:flex;gap:10px;padding:18px 20px 0;overflow:auto">
+      <sc-for list="{{ cats }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.pick }}" style="cursor:pointer;flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:transparent;padding:0"><div style="width:60px;height:60px;border-radius:18px;background:{{ c.bg }};border:1px solid {{ c.border }};display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ c.icon }}" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle></svg></div><div style="font-size:11px;color:#fff;font-weight:500">{{ c.name }}</div></button></sc-for>
+    </div>
+    <div style="padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between"><div style="font-size:15px;font-weight:700">{{ t.results }} <span style="color:#A3A3A3;font-weight:500">({{ resultCount }})</span></div><div style="font-size:12px;color:#A3A3A3">{{ t.sort }} ▾</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 20px 0">
+      <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+      <button onClick="{{ p.open }}" style="cursor:pointer;text-align:start;padding:0;border:1px solid #222;background:#111;border-radius:18px;overflow:hidden;color:#fff;font-family:Montserrat,Tajawal,sans-serif;display:flex;flex-direction:column">
+        <div style="height:120px;background:repeating-linear-gradient(135deg,#1c1c1c 0 8px,#141414 8px 16px);position:relative;width:100%;display:flex;align-items:center;justify-content:center;font:500 10px monospace;color:#A3A3A3">{{ p.img }}
+          <sc-if value="{{ p.fits }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;top:8px;inset-inline-start:8px;height:24px;padding:0 8px;border-radius:12px;background:#E30613;display:flex;align-items:center;gap:4px;font:700 10px Montserrat,Tajawal,sans-serif;color:#fff"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="m5 12 5 5L20 7"></path></svg>{{ t.fits }}</div></sc-if>
+          <sc-if value="{{ p.nofits }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:8px;inset-inline-start:8px;height:24px;padding:0 8px;border-radius:12px;background:rgba(0,0,0,.7);border:1px solid #333;font:600 10px Montserrat,Tajawal,sans-serif;color:#fff;display:flex;align-items:center">{{ t.checkFit }}</div></sc-if>
+          <div style="position:absolute;bottom:8px;inset-inline-end:8px;height:22px;padding:0 8px;border-radius:6px;background:#000;font:600 10px Montserrat,Tajawal,sans-serif;color:#fff;display:flex;align-items:center">{{ p.cond }}</div>
+        </div>
+        <div style="padding:10px 12px 12px;width:100%;box-sizing:border-box">
+          <div style="font-size:13px;font-weight:600;line-height:1.3;min-height:34px">{{ p.name }}</div>
+          <div style="font-size:11px;color:#A3A3A3;margin-top:4px;font-family:monospace">OEM {{ p.oem }}</div>
+          <div style="font-size:15px;font-weight:800;margin-top:8px">{{ p.price }} <span style="font-size:10px;font-weight:600;color:#A3A3A3">{{ t.iqd }}</span></div>
+          <div style="font-size:11px;color:#A3A3A3;margin-top:4px;display:flex;justify-content:space-between"><span>{{ p.shop }}</span><span>{{ p.city }}</span></div>
+        </div>
+      </button>
+      </sc-for>
+    </div>
+  </div>
+  <div style="border-top:1px solid #222;background:#000;display:flex;padding:8px 10px 34px">
+    <button onClick="{{ goHome }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#E30613;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="2"><path d="M3 11 12 3l9 8v10H3z"></path></svg>{{ t.tabHome }}</button>
+    <button onClick="{{ goFilters }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{{ t.tabSearch }}</button>
+    <button onClick="{{ goCart }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M3 4h2l2.5 11h11L21 7H6.5"></path><circle cx="9" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg>{{ t.tabCart }}</button>
+    <button onClick="{{ goProfile }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M4 20a8 8 0 0 1 16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>{{ t.tabProfile }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- FILTERS SHEET -->
+<sc-if value="{{ show.filters }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Filters" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">02b · Advanced filters + saved search (sheet)</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;font-weight:800;font-size:20px;letter-spacing:2px;opacity:.35"><span style="color:#E30613">A</span>CKSES</div>
+  <div style="margin-top:auto;background:#111;border-radius:28px 28px 0 0;border-top:1px solid #333;display:flex;flex-direction:column;max-height:88%">
+    <div style="padding:14px 20px 0"><div style="width:40px;height:4px;border-radius:2px;background:#333;margin:0 auto 14px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:18px;font-weight:700">{{ t.filters }}</div><button onClick="{{ resetFilters }}" style="cursor:pointer;height:44px;padding:0 8px;border:0;background:transparent;color:#E30613;font:600 13px Montserrat,Tajawal,sans-serif">{{ t.reset }}</button></div></div>
+    <div style="flex:1;overflow:auto;padding:6px 20px 0">
+      <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:10px">{{ t.category }}</div>
+      <div style="margin-top:8px;border:1px solid #333;border-radius:14px;overflow:hidden">
+        <sc-for list="{{ catTree }}" as="c" hint-placeholder-count="3">
+        <button onClick="{{ c.toggle }}" style="cursor:pointer;width:100%;height:48px;padding:0 14px;border:0;border-top:1px solid #222;background:#000;color:#fff;display:flex;align-items:center;justify-content:space-between;font:600 13px Montserrat,Tajawal,sans-serif"><span>{{ c.name }}</span><span style="color:#A3A3A3;font-size:12px">{{ c.count }} {{ c.chev }}</span></button>
+        <sc-if value="{{ c.open }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:8px;padding:6px 14px 14px;background:#000"><sc-for list="{{ c.subs }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.pick }}" style="cursor:pointer;height:36px;padding:0 12px;border-radius:18px;border:1px solid {{ s.border }};background:{{ s.bg }};color:#fff;font:500 12px Montserrat,Tajawal,sans-serif">{{ s.name }}</button></sc-for></div></sc-if>
+        </sc-for>
+      </div>
+      <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:18px">{{ t.condition }}</div>
+      <div style="display:flex;margin-top:8px;background:#000;border:1px solid #333;border-radius:12px;padding:3px">
+        <sc-for list="{{ conds }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.pick }}" style="cursor:pointer;flex:1;height:40px;border-radius:10px;border:0;background:{{ c.bg }};color:#fff;font:600 12px Montserrat,Tajawal,sans-serif">{{ c.name }}</button></sc-for>
+      </div>
+      <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:18px">{{ t.brand }}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+        <sc-for list="{{ brands }}" as="b" hint-placeholder-count="6"><button onClick="{{ b.pick }}" style="cursor:pointer;height:36px;padding:0 12px;border-radius:18px;border:1px solid {{ b.border }};background:{{ b.bg }};color:#fff;font:500 12px Montserrat,sans-serif">{{ b.name }}</button></sc-for>
+      </div>
+      <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:18px">{{ t.price }} ({{ t.iqd }})</div>
+      <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+        <div style="flex:1;height:44px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#A3A3A3">{{ t.min }} <span style="color:#fff;margin-inline-start:auto">10,000</span></div>
+        <div style="width:10px;height:1px;background:#333"></div>
+        <div style="flex:1;height:44px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#A3A3A3">{{ t.max }} <span style="color:#fff;margin-inline-start:auto">250,000</span></div>
+      </div>
+      <div style="position:relative;height:24px;margin:10px 6px 0"><div style="position:absolute;top:11px;left:0;right:0;height:2px;background:#333"></div><div style="position:absolute;top:11px;left:8%;right:40%;height:2px;background:#E30613"></div><div style="position:absolute;top:2px;left:8%;width:20px;height:20px;border-radius:10px;background:#fff;margin-left:-10px"></div><div style="position:absolute;top:2px;right:40%;width:20px;height:20px;border-radius:10px;background:#fff;margin-right:-10px"></div></div>
+      <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:18px">{{ t.city }}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+        <sc-for list="{{ cities }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.pick }}" style="cursor:pointer;height:36px;padding:0 12px;border-radius:18px;border:1px solid {{ c.border }};background:{{ c.bg }};color:#fff;font:500 12px Montserrat,Tajawal,sans-serif">{{ c.name }}</button></sc-for>
+      </div>
+      <button onClick="{{ toggleFits }}" style="cursor:pointer;margin-top:18px;width:100%;height:56px;padding:0 14px;border-radius:14px;border:1px solid #333;background:#000;color:#fff;display:flex;align-items:center;justify-content:space-between;font:600 13px Montserrat,Tajawal,sans-serif"><span style="display:flex;flex-direction:column;align-items:flex-start;gap:2px"><span>{{ t.fitsOnly }}</span><span style="font-size:11px;color:#A3A3A3;font-weight:500">{{ carLabel }}</span></span><span style="width:46px;height:28px;border-radius:14px;background:{{ fitsBg }};border:1px solid {{ fitsBorder }};position:relative;display:block"><span style="position:absolute;top:3px;width:20px;height:20px;border-radius:10px;background:#fff;left:{{ fitsKnob }}"></span></span></button>
+      <button onClick="{{ toggleSave }}" style="cursor:pointer;margin-top:10px;width:100%;height:56px;padding:0 14px;border-radius:14px;border:1px solid #333;background:#000;color:#fff;display:flex;align-items:center;justify-content:space-between;font:600 13px Montserrat,Tajawal,sans-serif"><span style="display:flex;flex-direction:column;align-items:flex-start;gap:2px"><span>{{ t.saveSearch }}</span><span style="font-size:11px;color:#A3A3A3;font-weight:500">{{ t.saveSearchSub }}</span></span><span style="width:46px;height:28px;border-radius:14px;background:{{ saveBg }};border:1px solid {{ saveBorder }};position:relative;display:block"><span style="position:absolute;top:3px;width:20px;height:20px;border-radius:10px;background:#fff;left:{{ saveKnob }}"></span></span></button>
+      <div style="height:16px"></div>
+    </div>
+    <div style="padding:12px 20px 44px;border-top:1px solid #222;display:flex;gap:10px">
+      <button onClick="{{ goHome }}" style="cursor:pointer;flex:1;height:52px;border-radius:14px;border:1px solid #333;background:#000;color:#fff;font:600 13px Montserrat,Tajawal,sans-serif">{{ t.cancel }}</button>
+      <button onClick="{{ goHome }}" style="cursor:pointer;flex:2;height:52px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 14px Montserrat,Tajawal,sans-serif">{{ t.showResults }} ({{ resultCount }})</button>
+    </div>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- IMAGE SEARCH -->
+<sc-if value="{{ show.imgsearch }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Image search" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">02c · Search by image</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;display:flex;align-items:center;gap:10px"><button onClick="{{ goHome }}" style="cursor:pointer;width:44px;height:44px;border-radius:22px;border:0;background:#111;color:#fff;font-size:18px">‹</button><div style="font-size:16px;font-weight:700">{{ t.imgTitle }}</div></div>
+  <div style="margin:16px 20px 0;height:300px;border-radius:24px;background:repeating-linear-gradient(135deg,#1a1a1a 0 8px,#121212 8px 16px);position:relative;display:flex;align-items:center;justify-content:center;font:500 11px monospace;color:#A3A3A3">camera viewfinder
+    <div style="position:absolute;inset:36px;border:2px solid rgba(255,255,255,.35);border-radius:16px"></div>
+    <div style="position:absolute;top:36px;left:36px;width:28px;height:28px;border-top:3px solid #E30613;border-left:3px solid #E30613;border-radius:14px 0 0 0"></div>
+    <div style="position:absolute;bottom:36px;right:36px;width:28px;height:28px;border-bottom:3px solid #E30613;border-right:3px solid #E30613;border-radius:0 0 14px 0"></div>
+    <div style="position:absolute;bottom:14px;left:50%;width:64px;height:64px;border-radius:32px;background:#fff;margin-left:-32px;border:5px solid #333"></div>
+  </div>
+  <div style="margin:18px 20px 0;display:flex;align-items:center;gap:10px"><div style="width:8px;height:8px;border-radius:4px;background:#E30613"></div><div style="font-size:13px;color:#A3A3A3">{{ t.detected }}</div><div style="font-size:13px;font-weight:700">{{ t.detectedPart }} · 94%</div></div>
+  <div style="flex:1;overflow:auto;padding:14px 20px 40px;display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ imgResults }}" as="p" hint-placeholder-count="3">
+    <button onClick="{{ p.open }}" style="cursor:pointer;text-align:start;display:flex;gap:12px;padding:10px;border:1px solid #222;background:#111;border-radius:16px;color:#fff;font-family:Montserrat,Tajawal,sans-serif;align-items:center">
+      <div style="width:72px;height:72px;border-radius:12px;background:repeating-linear-gradient(135deg,#1c1c1c 0 6px,#141414 6px 12px);flex:none"></div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600">{{ p.name }}</div><div style="font-size:11px;color:#A3A3A3;font-family:monospace;margin-top:2px">OEM {{ p.oem }}</div><div style="font-size:14px;font-weight:800;margin-top:6px">{{ p.price }} <span style="font-size:10px;color:#A3A3A3">{{ t.iqd }}</span></div></div>
+      <sc-if value="{{ p.fits }}" hint-placeholder-val="{{ true }}"><div style="height:24px;padding:0 8px;border-radius:12px;background:#E30613;font:700 10px Montserrat,Tajawal,sans-serif;display:flex;align-items:center">{{ t.fits }}</div></sc-if>
+    </button>
+    </sc-for>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- PRODUCT -->
+<sc-if value="{{ show.product }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Product" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">03 · Product detail</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box">
+  <div style="flex:1;overflow:auto">
+    <div style="height:340px;background:repeating-linear-gradient(135deg,#1c1c1c 0 10px,#121212 10px 20px);position:relative;display:flex;align-items:center;justify-content:center;font:500 11px monospace;color:#A3A3A3">product photo · {{ cur.img }}
+      <button onClick="{{ goHome }}" style="cursor:pointer;position:absolute;top:58px;inset-inline-start:16px;width:44px;height:44px;border-radius:22px;border:0;background:rgba(0,0,0,.7);color:#fff;font-size:18px">‹</button>
+      <div style="position:absolute;bottom:14px;display:flex;gap:6px"><div style="width:18px;height:6px;border-radius:3px;background:#E30613"></div><div style="width:6px;height:6px;border-radius:3px;background:#555"></div><div style="width:6px;height:6px;border-radius:3px;background:#555"></div></div>
+    </div>
+    <div style="padding:18px 20px 0">
+      <div style="display:flex;gap:8px;align-items:center">
+        <sc-if value="{{ cur.fits }}" hint-placeholder-val="{{ true }}"><div style="height:26px;padding:0 10px;border-radius:13px;background:#E30613;display:flex;align-items:center;gap:6px;font:700 11px Montserrat,Tajawal,sans-serif"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="m5 12 5 5L20 7"></path></svg>{{ t.fitsYour }} {{ carLabel }}</div></sc-if>
+        <sc-if value="{{ cur.nofits }}" hint-placeholder-val="{{ false }}"><div style="height:26px;padding:0 10px;border-radius:13px;background:#111;border:1px solid #333;display:flex;align-items:center;font:600 11px Montserrat,Tajawal,sans-serif">{{ t.checkFit }} · {{ carLabel }}</div></sc-if>
+        <div style="height:26px;padding:0 10px;border-radius:6px;background:#111;border:1px solid #333;display:flex;align-items:center;font:600 11px Montserrat,Tajawal,sans-serif">{{ cur.cond }}</div>
+      </div>
+      <div style="font-size:20px;font-weight:700;line-height:1.25;margin-top:12px">{{ cur.name }}</div>
+      <div style="display:flex;gap:14px;margin-top:8px;font-size:12px;color:#A3A3A3"><span style="font-family:monospace">OEM {{ cur.oem }}</span><span>{{ cur.brand }}</span><span>{{ t.stock }}: {{ cur.stock }}</span></div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-top:14px"><div style="font-size:28px;font-weight:800">{{ cur.price }}</div><div style="font-size:12px;color:#A3A3A3;font-weight:600">{{ t.iqd }}</div><div style="margin-inline-start:auto;font-size:12px;color:#A3A3A3">{{ t.delivery }} 2–3 {{ t.days }} · {{ t.cod }}</div></div>
+      <button onClick="{{ goShop }}" style="cursor:pointer;margin-top:18px;width:100%;padding:12px 14px;border-radius:16px;border:1px solid #333;background:#111;color:#fff;display:flex;align-items:center;gap:12px;text-align:start;font-family:Montserrat,Tajawal,sans-serif">
+        <div style="width:44px;height:44px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;justify-content:center;font:800 14px Montserrat,sans-serif;color:#E30613">R</div>
+        <div style="flex:1"><div style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px">{{ shop.name }}<svg width="14" height="14" viewBox="0 0 24 24" fill="#E30613"><path d="m12 2 2.4 2.4 3.4-.4.8 3.3 3 1.7-1.5 3 1.5 3-3 1.7-.8 3.3-3.4-.4L12 22l-2.4-2.4-3.4.4-.8-3.3-3-1.7 1.5-3-1.5-3 3-1.7.8-3.3 3.4.4z"></path><path d="m8.5 12 2.5 2.5 4.5-5" stroke="#fff" stroke-width="2.5" fill="none"></path></svg></div><div style="font-size:12px;color:#A3A3A3;margin-top:2px">★ 4.8 · {{ shop.city }} · {{ t.respRate }} 98%</div></div>
+        <div style="color:#A3A3A3">›</div>
+      </button>
+      <button onClick="{{ goSeller }}" style="cursor:pointer;margin-top:8px;width:100%;height:48px;padding:0 14px;border-radius:14px;border:1px solid #222;background:transparent;color:#fff;display:flex;align-items:center;gap:10px;text-align:start;font:500 13px Montserrat,Tajawal,sans-serif"><div style="width:28px;height:28px;border-radius:14px;background:#333"></div><span style="color:#A3A3A3">{{ t.soldBy }}</span><span style="font-weight:600">{{ seller.name }}</span><span style="margin-inline-start:auto;color:#A3A3A3">›</span></button>
+      <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:22px">{{ t.specs }}</div>
+      <div style="margin-top:8px;border:1px solid #222;border-radius:14px;overflow:hidden">
+        <sc-for list="{{ specs }}" as="s" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;padding:12px 14px;border-top:1px solid #1a1a1a;font-size:13px"><span style="color:#A3A3A3">{{ s.k }}</span><span style="font-weight:600">{{ s.v }}</span></div></sc-for>
+      </div>
+      <div style="height:24px"></div>
+    </div>
+  </div>
+  <div style="padding:12px 20px 44px;border-top:1px solid #222;background:#000;display:flex;gap:10px">
+    <button onClick="{{ addCur }}" style="cursor:pointer;flex:1;height:52px;border-radius:14px;border:1px solid #E30613;background:transparent;color:#fff;font:700 13px Montserrat,Tajawal,sans-serif">{{ addLabel }}</button>
+    <button onClick="{{ buyNow }}" style="cursor:pointer;flex:1;height:52px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 13px Montserrat,Tajawal,sans-serif">{{ t.buyNow }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- SHOP PROFILE -->
+<sc-if value="{{ show.shop }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Shop profile" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">04 · Shop profile (buyer view)</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box">
+  <div style="flex:1;overflow:auto;padding-bottom:40px">
+    <div style="height:170px;background:linear-gradient(180deg,#1a0305,#000),repeating-linear-gradient(135deg,#1c1c1c 0 10px,#121212 10px 20px);position:relative;z-index:0;display:flex;align-items:flex-start;justify-content:center;padding-top:110px;font:500 11px monospace;color:#A3A3A3">shop cover photo
+      <button onClick="{{ goProduct }}" style="cursor:pointer;position:absolute;top:58px;inset-inline-start:16px;width:44px;height:44px;border-radius:22px;border:0;background:rgba(0,0,0,.7);color:#fff;font-size:18px">‹</button>
+    </div>
+    <div style="padding:0 20px;margin-top:-28px;display:flex;align-items:flex-end;gap:14px;position:relative;z-index:1">
+      <div style="width:72px;height:72px;border-radius:20px;background:#111;border:2px solid #000;display:flex;align-items:center;justify-content:center;font:800 26px Montserrat,sans-serif;color:#E30613;flex:none">R</div>
+      <div style="flex:1;padding-bottom:4px;min-width:0"><div style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.2;background:#000;border-radius:8px;padding:2px 0">{{ shop.name }}<svg width="16" height="16" viewBox="0 0 24 24" fill="#E30613"><path d="m12 2 2.4 2.4 3.4-.4.8 3.3 3 1.7-1.5 3 1.5 3-3 1.7-.8 3.3-3.4-.4L12 22l-2.4-2.4-3.4.4-.8-3.3-3-1.7 1.5-3-1.5-3 3-1.7.8-3.3 3.4.4z"></path><path d="m8.5 12 2.5 2.5 4.5-5" stroke="#fff" stroke-width="2.5" fill="none"></path></svg></div><div style="font-size:12px;color:#A3A3A3;margin-top:2px">{{ shop.city }} · {{ t.since }} 2019</div></div>
+      <button style="cursor:pointer;height:40px;padding:0 16px;border-radius:12px;border:0;background:#E30613;color:#fff;font:700 12px Montserrat,Tajawal,sans-serif">{{ t.follow }}</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:18px 20px 0">
+      <sc-for list="{{ shopStats }}" as="s" hint-placeholder-count="4"><div style="background:#111;border:1px solid #222;border-radius:14px;padding:10px 8px;text-align:center"><div style="font-size:16px;font-weight:800">{{ s.v }}</div><div style="font-size:10px;color:#A3A3A3;margin-top:2px">{{ s.k }}</div></div></sc-for>
+    </div>
+    <div style="display:flex;gap:6px;padding:18px 20px 0;border-bottom:1px solid #222">
+      <sc-for list="{{ shopTabs }}" as="tb" hint-placeholder-count="3"><button onClick="{{ tb.pick }}" style="cursor:pointer;height:44px;padding:0 14px;border:0;border-bottom:2px solid {{ tb.border }};background:transparent;color:{{ tb.color }};font:600 13px Montserrat,Tajawal,sans-serif">{{ tb.name }}</button></sc-for>
+    </div>
+    <sc-if value="{{ shopTabProducts }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:14px 20px 0"><div style="height:44px;border-radius:12px;background:#111;border:1px solid #333;display:flex;align-items:center;padding:0 12px;gap:8px;font-size:12px;color:#A3A3A3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{{ t.searchInShop }}</div></div>
+    <div style="display:flex;gap:8px;padding:12px 20px 0;overflow:auto"><sc-for list="{{ shopCats }}" as="c" hint-placeholder-count="4"><div style="flex:none;height:32px;padding:0 12px;border-radius:16px;border:1px solid {{ c.border }};background:{{ c.bg }};font:500 12px Montserrat,Tajawal,sans-serif;display:flex;align-items:center">{{ c.name }}</div></sc-for></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 20px 0">
+      <sc-for list="{{ shopProducts }}" as="p" hint-placeholder-count="4">
+      <button onClick="{{ p.open }}" style="cursor:pointer;text-align:start;padding:0;border:1px solid #222;background:#111;border-radius:18px;overflow:hidden;color:#fff;font-family:Montserrat,Tajawal,sans-serif;display:flex;flex-direction:column">
+        <div style="height:110px;background:repeating-linear-gradient(135deg,#1c1c1c 0 8px,#141414 8px 16px);width:100%;position:relative"><sc-if value="{{ p.fits }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;top:8px;inset-inline-start:8px;height:22px;padding:0 8px;border-radius:11px;background:#E30613;font:700 10px Montserrat,Tajawal,sans-serif;display:flex;align-items:center">{{ t.fits }}</div></sc-if></div>
+        <div style="padding:10px 12px 12px;width:100%;box-sizing:border-box"><div style="font-size:12px;font-weight:600;line-height:1.3;min-height:32px">{{ p.name }}</div><div style="font-size:14px;font-weight:800;margin-top:6px">{{ p.price }} <span style="font-size:10px;color:#A3A3A3">{{ t.iqd }}</span></div></div>
+      </button>
+      </sc-for>
+    </div>
+    </sc-if>
+    <sc-if value="{{ shopTabAbout }}" hint-placeholder-val="{{ false }}"><div style="padding:18px 20px;font-size:13px;line-height:1.6;color:#A3A3A3">{{ t.shopAbout }}</div>
+      <div style="padding:0 20px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:13px;padding:12px 14px;background:#111;border-radius:12px"><span style="color:#A3A3A3">{{ t.hours }}</span><span>9:00 – 21:00</span></div><div style="display:flex;justify-content:space-between;font-size:13px;padding:12px 14px;background:#111;border-radius:12px"><span style="color:#A3A3A3">{{ t.address }}</span><span>{{ shop.addr }}</span></div><div style="display:flex;justify-content:space-between;font-size:13px;padding:12px 14px;background:#111;border-radius:12px"><span style="color:#A3A3A3">{{ t.payment }}</span><span>{{ t.cod }}</span></div></div></sc-if>
+    <sc-if value="{{ shopTabReviews }}" hint-placeholder-val="{{ false }}"><div style="padding:18px 20px;display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3"><div style="background:#111;border:1px solid #222;border-radius:14px;padding:12px 14px"><div style="display:flex;justify-content:space-between;font-size:12px"><span style="font-weight:600">{{ r.who }}</span><span style="color:#E30613">{{ r.stars }}</span></div><div style="font-size:13px;color:#A3A3A3;margin-top:6px;line-height:1.5">{{ r.text }}</div></div></sc-for></div></sc-if>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- SELLER PROFILE -->
+<sc-if value="{{ show.seller }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Seller profile" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">05 · Seller profile (person, buyer view)</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;display:flex;align-items:center;gap:10px"><button onClick="{{ goProduct }}" style="cursor:pointer;width:44px;height:44px;border-radius:22px;border:0;background:#111;color:#fff;font-size:18px">‹</button><div style="font-size:16px;font-weight:700">{{ t.sellerProfile }}</div></div>
+  <div style="flex:1;overflow:auto;padding:24px 20px 40px">
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center">
+      <div style="width:96px;height:96px;border-radius:48px;background:#111;border:2px solid #E30613;display:flex;align-items:center;justify-content:center;font:800 32px Montserrat,sans-serif">{{ seller.initial }}</div>
+      <div style="font-size:20px;font-weight:700;margin-top:14px;display:flex;align-items:center;gap:6px">{{ seller.name }}<svg width="16" height="16" viewBox="0 0 24 24" fill="#E30613"><path d="m12 2 2.4 2.4 3.4-.4.8 3.3 3 1.7-1.5 3 1.5 3-3 1.7-.8 3.3-3.4-.4L12 22l-2.4-2.4-3.4.4-.8-3.3-3-1.7 1.5-3-1.5-3 3-1.7.8-3.3 3.4.4z"></path><path d="m8.5 12 2.5 2.5 4.5-5" stroke="#fff" stroke-width="2.5" fill="none"></path></svg></div>
+      <div style="font-size:12px;color:#A3A3A3;margin-top:4px">{{ t.idVerified }} · {{ t.member }} 2019 · {{ shop.city }}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:22px">
+      <sc-for list="{{ sellerStats }}" as="s" hint-placeholder-count="3"><div style="background:#111;border:1px solid #222;border-radius:14px;padding:12px 8px;text-align:center"><div style="font-size:18px;font-weight:800">{{ s.v }}</div><div style="font-size:10px;color:#A3A3A3;margin-top:2px">{{ s.k }}</div></div></sc-for>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button style="cursor:pointer;flex:1;height:48px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 13px Montserrat,Tajawal,sans-serif">{{ t.message }}</button>
+      <button style="cursor:pointer;flex:1;height:48px;border-radius:14px;border:1px solid #333;background:#111;color:#fff;font:600 13px Montserrat,Tajawal,sans-serif">{{ t.call }}</button>
+    </div>
+    <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:26px">{{ t.shopsBy }}</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+      <sc-for list="{{ sellerShops }}" as="s" hint-placeholder-count="2"><button onClick="{{ goShop }}" style="cursor:pointer;text-align:start;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid #222;background:#111;color:#fff;font-family:Montserrat,Tajawal,sans-serif"><div style="width:44px;height:44px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;justify-content:center;font:800 14px Montserrat,sans-serif;color:#E30613">{{ s.initial }}</div><div style="flex:1"><div style="font-size:14px;font-weight:700">{{ s.name }}</div><div style="font-size:12px;color:#A3A3A3;margin-top:2px">{{ s.meta }}</div></div><div style="color:#A3A3A3">›</div></button></sc-for>
+    </div>
+    <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:26px">{{ t.ratings }}</div>
+    <div style="margin-top:10px;background:#111;border:1px solid #222;border-radius:16px;padding:14px;display:flex;gap:16px;align-items:center">
+      <div style="text-align:center"><div style="font-size:34px;font-weight:800;line-height:1">4.8</div><div style="font-size:11px;color:#E30613;margin-top:4px">★★★★★</div><div style="font-size:10px;color:#A3A3A3;margin-top:2px">1,240 {{ t.reviewsWord }}</div></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{ ratingBars }}" as="b" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:8px;font-size:10px;color:#A3A3A3"><span style="width:8px">{{ b.n }}</span><div style="flex:1;height:6px;border-radius:3px;background:#222;overflow:hidden"><div style="height:100%;background:#E30613;width:{{ b.w }}"></div></div></div></sc-for>
+      </div>
+    </div>
+    <button style="cursor:pointer;margin-top:16px;width:100%;height:44px;border:0;background:transparent;color:#A3A3A3;font:500 12px Montserrat,Tajawal,sans-serif">{{ t.report }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- BUYER PROFILE -->
+<sc-if value="{{ show.profile }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Buyer profile" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">06 · Buyer profile — garage, saved searches, orders</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;display:flex;align-items:center;justify-content:space-between"><div style="font-size:22px;font-weight:700">{{ t.profile }}</div>
+    <div style="display:flex;border:1px solid #333;border-radius:20px;overflow:hidden"><button onClick="{{ setEn }}" style="cursor:pointer;height:32px;padding:0 12px;border:0;background:{{ enBg }};color:#fff;font:600 12px Montserrat,sans-serif">EN</button><button onClick="{{ setAr }}" style="cursor:pointer;height:32px;padding:0 12px;border:0;background:{{ arBg }};color:#fff;font:700 13px Tajawal,sans-serif">ع</button></div>
+  </div>
+  <div style="flex:1;overflow:auto;padding:18px 20px 20px">
+    <div style="display:flex;align-items:center;gap:14px"><div style="width:60px;height:60px;border-radius:30px;background:#111;border:1px solid #333;display:flex;align-items:center;justify-content:center;font:800 22px Montserrat,sans-serif">{{ t.buyerInitial }}</div><div><div style="font-size:17px;font-weight:700">{{ t.buyerName }}</div><div style="font-size:12px;color:#A3A3A3;margin-top:2px">+964 770 ••• 4412 · {{ t.baghdad }}</div></div><button style="cursor:pointer;margin-inline-start:auto;height:40px;padding:0 14px;border-radius:12px;border:1px solid #333;background:#111;color:#fff;font:600 12px Montserrat,Tajawal,sans-serif">{{ t.edit }}</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:26px"><div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.garage }}</div><button onClick="{{ goOnboarding }}" style="cursor:pointer;height:36px;padding:0 10px;border:0;background:transparent;color:#E30613;font:600 12px Montserrat,Tajawal,sans-serif">+ {{ t.addCar }}</button></div>
+    <div style="display:flex;gap:10px;margin-top:10px;overflow:auto">
+      <sc-for list="{{ garage }}" as="g" hint-placeholder-count="2"><button onClick="{{ g.pick }}" style="cursor:pointer;flex:none;width:200px;text-align:start;padding:14px;border-radius:18px;border:1px solid {{ g.border }};background:#111;color:#fff;font-family:Montserrat,Tajawal,sans-serif"><div style="height:64px;border-radius:12px;background:repeating-linear-gradient(135deg,#1c1c1c 0 6px,#141414 6px 12px)"></div><div style="font-size:14px;font-weight:700;margin-top:10px">{{ g.name }}</div><div style="font-size:11px;color:#A3A3A3;margin-top:2px;font-family:monospace">{{ g.vin }}</div><sc-if value="{{ g.active }}" hint-placeholder-val="{{ true }}"><div style="margin-top:8px;display:inline-flex;height:22px;padding:0 8px;border-radius:11px;background:#E30613;font:700 10px Montserrat,Tajawal,sans-serif;align-items:center">{{ t.activeCar }}</div></sc-if></button></sc-for>
+    </div>
+    <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:26px">{{ t.savedSearches }}</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+      <sc-for list="{{ savedSearches }}" as="s" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid #222;background:#111"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><div style="flex:1"><div style="font-size:13px;font-weight:600">{{ s.q }}</div><div style="font-size:11px;color:#A3A3A3;margin-top:2px">{{ s.meta }}</div></div><button onClick="{{ s.toggle }}" style="cursor:pointer;width:46px;height:28px;border-radius:14px;border:1px solid {{ s.border }};background:{{ s.bg }};position:relative;padding:0"><span style="position:absolute;top:3px;width:20px;height:20px;border-radius:10px;background:#fff;left:{{ s.knob }}"></span></button></div></sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:26px"><div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.orders }}</div><div style="font-size:12px;color:#E30613;font-weight:600">{{ t.seeAll }}</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+      <sc-for list="{{ buyerOrders }}" as="o" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid #222;background:#111"><div style="width:48px;height:48px;border-radius:12px;background:repeating-linear-gradient(135deg,#1c1c1c 0 6px,#141414 6px 12px)"></div><div style="flex:1"><div style="font-size:13px;font-weight:600">{{ o.name }}</div><div style="font-size:11px;color:#A3A3A3;margin-top:2px">#{{ o.id }} · {{ o.price }} {{ t.iqd }}</div></div><div style="height:26px;padding:0 10px;border-radius:13px;background:{{ o.bg }};border:1px solid {{ o.border }};font:600 11px Montserrat,Tajawal,sans-serif;display:flex;align-items:center">{{ o.status }}</div></div></sc-for>
+    </div>
+    <div style="margin-top:22px;border:1px solid #222;border-radius:16px;overflow:hidden">
+      <sc-for list="{{ profileMenu }}" as="m" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;align-items:center;height:52px;padding:0 14px;border-top:1px solid #1a1a1a;font-size:13px;font-weight:500"><span>{{ m.k }}</span><span style="color:#A3A3A3;font-size:12px">{{ m.v }} ›</span></div></sc-for>
+    </div>
+  </div>
+  <div style="border-top:1px solid #222;background:#000;display:flex;padding:8px 10px 34px">
+    <button onClick="{{ goHome }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M3 11 12 3l9 8v10H3z"></path></svg>{{ t.tabHome }}</button>
+    <button onClick="{{ goFilters }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{{ t.tabSearch }}</button>
+    <button onClick="{{ goCart }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M3 4h2l2.5 11h11L21 7H6.5"></path><circle cx="9" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg>{{ t.tabCart }}</button>
+    <button onClick="{{ goProfile }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#E30613;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="2"><path d="M4 20a8 8 0 0 1 16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>{{ t.tabProfile }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- CART -->
+<sc-if value="{{ show.cart }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Cart" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">07 · Cart — grouped by shop, COD</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;display:flex;align-items:center;justify-content:space-between"><div style="font-size:22px;font-weight:700">{{ t.cart }} <span style="color:#A3A3A3;font-size:14px;font-weight:500">({{ cartCount }})</span></div><div style="font-size:12px;color:#A3A3A3">{{ t.deliverTo }} <span style="color:#fff;font-weight:600">{{ t.baghdad }}</span> ▾</div></div>
+  <div style="flex:1;overflow:auto;padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px">
+    <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:60px 20px;color:#A3A3A3;font-size:13px;line-height:1.6">{{ t.cartEmpty }}<div style="margin-top:14px"><button onClick="{{ goHome }}" style="cursor:pointer;height:44px;padding:0 18px;border-radius:12px;border:1px solid #333;background:#111;color:#fff;font:600 12px Montserrat,Tajawal,sans-serif">{{ t.browse }}</button></div></div></sc-if>
+    <sc-for list="{{ cartGroups }}" as="g" hint-placeholder-count="1">
+    <div style="border:1px solid #222;border-radius:18px;background:#111;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #1a1a1a"><div style="width:28px;height:28px;border-radius:8px;background:#000;border:1px solid #333;display:flex;align-items:center;justify-content:center;font:800 11px Montserrat,sans-serif;color:#E30613">{{ g.initial }}</div><div style="font-size:13px;font-weight:700;flex:1">{{ g.shop }}</div><div style="font-size:11px;color:#A3A3A3">{{ t.delivery }} {{ g.fee }} {{ t.iqd }}</div></div>
+      <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+      <div style="display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid #1a1a1a;align-items:center">
+        <div style="width:64px;height:64px;border-radius:12px;background:repeating-linear-gradient(135deg,#1c1c1c 0 6px,#141414 6px 12px);flex:none"></div>
+        <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;line-height:1.3">{{ it.name }}</div><div style="font-size:11px;color:#A3A3A3;margin-top:2px">{{ it.cond }} · OEM {{ it.oem }}</div><div style="font-size:14px;font-weight:800;margin-top:6px">{{ it.price }} <span style="font-size:10px;color:#A3A3A3">{{ t.iqd }}</span></div></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px"><button onClick="{{ it.remove }}" style="cursor:pointer;width:32px;height:32px;border:0;background:transparent;color:#A3A3A3;font-size:16px">✕</button><div style="display:flex;align-items:center;border:1px solid #333;border-radius:10px;overflow:hidden"><button onClick="{{ it.dec }}" style="cursor:pointer;width:36px;height:34px;border:0;background:#000;color:#fff;font-size:16px">−</button><div style="width:30px;text-align:center;font:700 13px Montserrat,sans-serif">{{ it.qty }}</div><button onClick="{{ it.inc }}" style="cursor:pointer;width:36px;height:34px;border:0;background:#000;color:#fff;font-size:16px">+</button></div></div>
+      </div>
+      </sc-for>
+    </div>
+    </sc-for>
+    <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ true }}">
+    <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:6px">{{ t.payment }}</div>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1;height:56px;border-radius:14px;border:1px solid #E30613;background:#111;display:flex;align-items:center;gap:10px;padding:0 14px"><div style="width:18px;height:18px;border-radius:9px;border:5px solid #E30613;box-sizing:border-box"></div><div><div style="font-size:13px;font-weight:700">{{ t.cod }}</div><div style="font-size:10px;color:#A3A3A3">{{ t.codSub }}</div></div></div>
+      <div style="flex:1;height:56px;border-radius:14px;border:1px solid #333;background:#111;display:flex;align-items:center;gap:10px;padding:0 14px"><div style="width:18px;height:18px;border-radius:9px;border:1px solid #555;box-sizing:border-box"></div><div><div style="font-size:13px;font-weight:700">{{ t.card }}</div><div style="font-size:10px;color:#A3A3A3">ZainCash · Visa</div></div></div>
+    </div>
+    <div style="border:1px solid #222;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:13px">
+      <div style="display:flex;justify-content:space-between;color:#A3A3A3"><span>{{ t.subtotal }}</span><span style="color:#fff">{{ subtotal }} {{ t.iqd }}</span></div>
+      <div style="display:flex;justify-content:space-between;color:#A3A3A3"><span>{{ t.delivery }}</span><span style="color:#fff">{{ deliveryTotal }} {{ t.iqd }}</span></div>
+      <div style="height:1px;background:#222"></div>
+      <div style="display:flex;justify-content:space-between;font-weight:800;font-size:16px"><span>{{ t.total }}</span><span>{{ total }} {{ t.iqd }}</span></div>
+    </div>
+    </sc-if>
+  </div>
+  <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ true }}"><div style="padding:12px 20px 0;border-top:1px solid #222;background:#000"><button style="cursor:pointer;width:100%;height:52px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 14px Montserrat,Tajawal,sans-serif">{{ t.checkout }} · {{ total }} {{ t.iqd }}</button></div></sc-if>
+  <div style="background:#000;display:flex;padding:8px 10px 34px">
+    <button onClick="{{ goHome }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M3 11 12 3l9 8v10H3z"></path></svg>{{ t.tabHome }}</button>
+    <button onClick="{{ goFilters }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{{ t.tabSearch }}</button>
+    <button onClick="{{ goCart }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#E30613;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="2"><path d="M3 4h2l2.5 11h11L21 7H6.5"></path><circle cx="9" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg>{{ t.tabCart }}</button>
+    <button onClick="{{ goProfile }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M4 20a8 8 0 0 1 16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>{{ t.tabProfile }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+</div>
+
+<sc-if value="{{ showSellerHead }}" hint-placeholder-val="{{ true }}"><div style="font-size:12px;letter-spacing:3px;color:#A3A3A3;font-weight:600;border-top:1px solid #333;padding-top:32px">SELLER APP</div></sc-if>
+<div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start">
+
+<!-- SELLER ACCOUNT -->
+<sc-if value="{{ show.sellerAccount }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Seller account" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">S1 · Seller account</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;display:flex;align-items:center;justify-content:space-between"><div style="font-size:22px;font-weight:700">{{ t.account }}</div>
+    <div style="display:flex;border:1px solid #333;border-radius:20px;overflow:hidden"><button onClick="{{ setEn }}" style="cursor:pointer;height:32px;padding:0 12px;border:0;background:{{ enBg }};color:#fff;font:600 12px Montserrat,sans-serif">EN</button><button onClick="{{ setAr }}" style="cursor:pointer;height:32px;padding:0 12px;border:0;background:{{ arBg }};color:#fff;font:700 13px Tajawal,sans-serif">ع</button></div>
+  </div>
+  <div style="flex:1;overflow:auto;padding:18px 20px 20px">
+    <div style="display:flex;align-items:center;gap:14px"><div style="width:60px;height:60px;border-radius:30px;background:#111;border:2px solid #E30613;display:flex;align-items:center;justify-content:center;font:800 22px Montserrat,sans-serif">{{ seller.initial }}</div><div style="flex:1"><div style="font-size:17px;font-weight:700">{{ seller.name }}</div><div style="font-size:12px;color:#A3A3A3;margin-top:2px;display:flex;align-items:center;gap:6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#E30613"><circle cx="12" cy="12" r="10"></circle><path d="m8 12 3 3 5-6" stroke="#fff" stroke-width="2.5" fill="none"></path></svg>{{ t.verifiedSeller }} · {{ t.member }} 2019</div></div></div>
+    <div style="margin-top:20px;border-radius:20px;padding:18px;background:linear-gradient(135deg,#E30613,#8a020b);position:relative;overflow:hidden">
+      <div style="position:absolute;right:-30px;top:-40px;width:160px;height:160px;border-radius:80px;background:rgba(255,255,255,.08)"></div>
+      <div style="font-size:11px;letter-spacing:2px;font-weight:600;opacity:.85">{{ t.balance }}</div>
+      <div style="font-size:30px;font-weight:800;margin-top:6px">2,840,000 <span style="font-size:13px;font-weight:600">{{ t.iqd }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><div style="font-size:12px;opacity:.85">{{ t.nextPayout }} · {{ t.thursday }}</div><button style="cursor:pointer;height:40px;padding:0 16px;border-radius:12px;border:0;background:#fff;color:#E30613;font:700 12px Montserrat,Tajawal,sans-serif">{{ t.withdraw }}</button></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+      <sc-for list="{{ accStats }}" as="s" hint-placeholder-count="3"><div style="background:#111;border:1px solid #222;border-radius:14px;padding:12px 10px"><div style="font-size:18px;font-weight:800">{{ s.v }}</div><div style="font-size:10px;color:#A3A3A3;margin-top:2px">{{ s.k }}</div><div style="font-size:10px;color:#E30613;margin-top:4px;font-weight:600">{{ s.d }}</div></div></sc-for>
+    </div>
+    <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:24px">{{ t.verification }}</div>
+    <div style="margin-top:10px;border:1px solid #222;border-radius:16px;overflow:hidden">
+      <sc-for list="{{ docs }}" as="d" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;align-items:center;height:52px;padding:0 14px;border-top:1px solid #1a1a1a;font-size:13px;font-weight:500"><span>{{ d.k }}</span><span style="height:24px;padding:0 10px;border-radius:12px;background:{{ d.bg }};border:1px solid {{ d.border }};font:600 11px Montserrat,Tajawal,sans-serif;display:flex;align-items:center">{{ d.v }}</span></div></sc-for>
+    </div>
+    <div style="margin-top:22px;border:1px solid #222;border-radius:16px;overflow:hidden">
+      <sc-for list="{{ accMenu }}" as="m" hint-placeholder-count="6"><button onClick="{{ m.go }}" style="cursor:pointer;width:100%;display:flex;justify-content:space-between;align-items:center;height:52px;padding:0 14px;border:0;border-top:1px solid #1a1a1a;background:transparent;color:#fff;font:500 13px Montserrat,Tajawal,sans-serif"><span>{{ m.k }}</span><span style="color:#A3A3A3;font-size:12px">{{ m.v }} ›</span></button></sc-for>
+    </div>
+    <button style="cursor:pointer;margin-top:16px;width:100%;height:48px;border-radius:14px;border:1px solid #333;background:transparent;color:#A3A3A3;font:600 13px Montserrat,Tajawal,sans-serif">{{ t.logout }}</button>
+  </div>
+  <div style="border-top:1px solid #222;background:#000;display:flex;padding:8px 10px 34px">
+    <button onClick="{{ goSellerAccount }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="8" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect><rect x="13" y="13" width="8" height="8" rx="2"></rect></svg>{{ t.tabDash }}</button>
+    <button onClick="{{ goSellerShop }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M3 9l2-5h14l2 5M3 9h18v11H3zM9 20v-6h6v6"></path></svg>{{ t.tabShop }}</button>
+    <button onClick="{{ goSellerOrders }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>{{ t.tabOrders }}</button>
+    <button onClick="{{ goSellerAccount }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#E30613;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="2"><path d="M4 20a8 8 0 0 1 16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>{{ t.tabAccount }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- SELLER SHOP MANAGEMENT -->
+<sc-if value="{{ show.sellerShop }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Seller shop" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">S2 · My shop — products & orders</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px;position:relative">
+  <div style="padding:0 20px;display:flex;align-items:center;gap:12px">
+    <div style="width:48px;height:48px;border-radius:14px;background:#111;border:1px solid #333;display:flex;align-items:center;justify-content:center;font:800 18px Montserrat,sans-serif;color:#E30613">R</div>
+    <div style="flex:1"><div style="font-size:17px;font-weight:700">{{ shop.name }}</div><div style="font-size:12px;color:#A3A3A3;margin-top:2px">{{ t.open }} · ★ 4.8 · {{ shop.city }}</div></div>
+    <button style="cursor:pointer;height:40px;padding:0 14px;border-radius:12px;border:1px solid #333;background:#111;color:#fff;font:600 12px Montserrat,Tajawal,sans-serif">{{ t.editShop }}</button>
+  </div>
+  <div style="display:flex;gap:6px;padding:16px 20px 0;border-bottom:1px solid #222">
+    <sc-for list="{{ sellerTabs }}" as="tb" hint-placeholder-count="2"><button onClick="{{ tb.pick }}" style="cursor:pointer;height:44px;padding:0 14px;border:0;border-bottom:2px solid {{ tb.border }};background:transparent;color:{{ tb.color }};font:600 13px Montserrat,Tajawal,sans-serif;display:flex;align-items:center;gap:6px">{{ tb.name }}<span style="min-width:20px;height:20px;border-radius:10px;background:{{ tb.badgeBg }};font:700 10px Montserrat,sans-serif;display:flex;align-items:center;justify-content:center;padding:0 6px;color:#fff">{{ tb.count }}</span></button></sc-for>
+  </div>
+  <sc-if value="{{ sellerTabProducts }}" hint-placeholder-val="{{ true }}">
+  <div style="padding:12px 20px 0;display:flex;gap:8px">
+    <div style="flex:1;height:44px;border-radius:12px;background:#111;border:1px solid #333;display:flex;align-items:center;padding:0 12px;gap:8px;font-size:12px;color:#A3A3A3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{{ t.searchMyProducts }}</div>
+    <sc-for list="{{ stockChips }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.pick }}" style="cursor:pointer;height:44px;padding:0 12px;border-radius:12px;border:1px solid {{ c.border }};background:{{ c.bg }};color:#fff;font:600 11px Montserrat,Tajawal,sans-serif">{{ c.name }}</button></sc-for>
+  </div>
+  <div style="flex:1;overflow:auto;padding:12px 20px 110px;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ myProducts }}" as="p" hint-placeholder-count="4">
+    <div style="display:flex;gap:12px;padding:10px;border-radius:16px;border:1px solid #222;background:#111;align-items:center">
+      <div style="width:64px;height:64px;border-radius:12px;background:repeating-linear-gradient(135deg,#1c1c1c 0 6px,#141414 6px 12px);flex:none"></div>
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;line-height:1.3">{{ p.name }}</div><div style="font-size:11px;color:#A3A3A3;margin-top:2px;font-family:monospace">OEM {{ p.oem }}</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px"><span style="font-size:14px;font-weight:800">{{ p.price }} <span style="font-size:10px;color:#A3A3A3">{{ t.iqd }}</span></span><span style="height:20px;padding:0 8px;border-radius:10px;background:{{ p.stBg }};border:1px solid {{ p.stBorder }};font:600 10px Montserrat,Tajawal,sans-serif;display:flex;align-items:center">{{ p.stockLabel }}</span></div></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><button onClick="{{ p.edit }}" style="cursor:pointer;width:40px;height:40px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 20h4l10-10-4-4L4 16z"></path></svg></button><button onClick="{{ p.del }}" style="cursor:pointer;width:40px;height:40px;border-radius:10px;border:1px solid #333;background:#000;color:#A3A3A3;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg></button></div>
+    </div>
+    </sc-for>
+  </div>
+  <button onClick="{{ goAddProduct }}" style="cursor:pointer;position:absolute;bottom:104px;inset-inline-end:20px;height:56px;padding:0 20px 0 16px;border-radius:28px;border:0;background:#E30613;color:#fff;display:flex;align-items:center;gap:8px;font:700 13px Montserrat,Tajawal,sans-serif;box-shadow:0 10px 30px rgba(227,6,19,.4)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M12 5v14M5 12h14"></path></svg>{{ t.addProduct }}</button>
+  </sc-if>
+  <sc-if value="{{ sellerTabOrders }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;gap:8px;padding:12px 20px 0;overflow:auto"><sc-for list="{{ orderChips }}" as="c" hint-placeholder-count="4"><div style="flex:none;height:34px;padding:0 12px;border-radius:17px;border:1px solid {{ c.border }};background:{{ c.bg }};font:600 11px Montserrat,Tajawal,sans-serif;display:flex;align-items:center">{{ c.name }}</div></sc-for></div>
+  <div style="flex:1;overflow:auto;padding:12px 20px 20px;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ sellerOrders }}" as="o" hint-placeholder-count="3">
+    <div style="padding:12px 14px;border-radius:16px;border:1px solid #222;background:#111">
+      <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:12px;color:#A3A3A3;font-family:monospace">#{{ o.id }}</div><div style="height:24px;padding:0 10px;border-radius:12px;background:{{ o.bg }};border:1px solid {{ o.border }};font:600 11px Montserrat,Tajawal,sans-serif;display:flex;align-items:center">{{ o.status }}</div></div>
+      <div style="font-size:13px;font-weight:600;margin-top:8px">{{ o.name }}</div>
+      <div style="font-size:11px;color:#A3A3A3;margin-top:2px">{{ o.buyer }} · {{ o.city }} · {{ t.cod }}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div style="font-size:15px;font-weight:800">{{ o.price }} <span style="font-size:10px;color:#A3A3A3">{{ t.iqd }}</span></div><button onClick="{{ o.update }}" style="cursor:pointer;height:36px;padding:0 14px;border-radius:10px;border:0;background:#E30613;color:#fff;font:700 11px Montserrat,Tajawal,sans-serif">{{ t.updateStatus }}</button></div>
+    </div>
+    </sc-for>
+  </div>
+  </sc-if>
+  <div style="border-top:1px solid #222;background:#000;display:flex;padding:8px 10px 34px">
+    <button onClick="{{ goSellerAccount }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="8" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect><rect x="13" y="13" width="8" height="8" rx="2"></rect></svg>{{ t.tabDash }}</button>
+    <button onClick="{{ goSellerShop }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:{{ shopTabColor }};display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ shopTabColor }}" stroke-width="2"><path d="M3 9l2-5h14l2 5M3 9h18v11H3zM9 20v-6h6v6"></path></svg>{{ t.tabShop }}</button>
+    <button onClick="{{ goSellerOrders }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:{{ ordersTabColor }};display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ ordersTabColor }}" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>{{ t.tabOrders }}</button>
+    <button onClick="{{ goSellerAccount }}" style="cursor:pointer;flex:1;height:48px;border:0;background:transparent;color:#A3A3A3;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 10px Montserrat,Tajawal,sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A3A3A3" stroke-width="2"><path d="M4 20a8 8 0 0 1 16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>{{ t.tabAccount }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- ADD PRODUCT SHEET -->
+<sc-if value="{{ show.addProduct }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Add product" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">S3 · Add product (3-step sheet) — tap steps</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;font-size:17px;font-weight:700;opacity:.35">{{ shop.name }}</div>
+  <div style="margin-top:22px;flex:1;background:#111;border-radius:28px 28px 0 0;border-top:1px solid #333;display:flex;flex-direction:column;min-height:0">
+    <div style="padding:14px 20px 0"><div style="width:40px;height:4px;border-radius:2px;background:#333;margin:0 auto 14px"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:18px;font-weight:700">{{ t.addProduct }}</div><button onClick="{{ goSellerShop }}" style="cursor:pointer;width:44px;height:44px;border-radius:22px;border:0;background:#1a1a1a;color:#fff;font-size:18px">×</button></div>
+      <div style="display:flex;gap:6px;margin-top:14px">
+        <sc-for list="{{ apSteps }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.pick }}" style="cursor:pointer;flex:1;padding:0;border:0;background:transparent;display:flex;flex-direction:column;gap:6px;color:{{ s.color }};font:600 11px Montserrat,Tajawal,sans-serif;align-items:flex-start"><div style="width:100%;height:3px;border-radius:2px;background:{{ s.bar }}"></div>{{ s.name }}</button></sc-for>
+      </div>
+    </div>
+    <div style="flex:1;overflow:auto;padding:18px 20px 0">
+      <sc-if value="{{ ap1 }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.photos }}</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px">
+          <div style="aspect-ratio:1;border-radius:12px;border:1px dashed #E30613;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;color:#E30613;font-weight:600"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="2"><path d="M4 8a2 2 0 0 1 2-2h2l2-2h4l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>{{ t.add }}</div>
+          <div style="aspect-ratio:1;border-radius:12px;background:repeating-linear-gradient(135deg,#1c1c1c 0 6px,#141414 6px 12px);position:relative"><div style="position:absolute;bottom:4px;inset-inline-start:4px;height:16px;padding:0 5px;border-radius:4px;background:#E30613;font:700 8px Montserrat,sans-serif;display:flex;align-items:center">{{ t.cover }}</div></div>
+          <div style="aspect-ratio:1;border-radius:12px;background:repeating-linear-gradient(135deg,#1c1c1c 0 6px,#141414 6px 12px)"></div>
+          <div style="aspect-ratio:1;border-radius:12px;border:1px dashed #333"></div>
+        </div>
+        <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:20px">{{ t.partName }}</div>
+        <div style="margin-top:8px;height:48px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 14px;font-size:13px">{{ t.samplePartName }}</div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <div style="flex:1"><div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">OEM</div><div style="margin-top:8px;height:48px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 14px;font:600 13px monospace">04465-33471</div></div>
+          <div style="flex:1"><div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.brand }}</div><div style="margin-top:8px;height:48px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 14px;font-size:13px">Toyota Genuine</div></div>
+        </div>
+        <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:16px">{{ t.category }}</div>
+        <div style="margin-top:8px;height:48px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 14px;font-size:13px;justify-content:space-between"><span>{{ t.catBrakes }} › {{ t.subPads }}</span><span style="color:#A3A3A3">▾</span></div>
+        <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:16px">{{ t.condition }}</div>
+        <div style="display:flex;margin-top:8px;background:#000;border:1px solid #333;border-radius:12px;padding:3px"><sc-for list="{{ apConds }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.pick }}" style="cursor:pointer;flex:1;height:40px;border-radius:10px;border:0;background:{{ c.bg }};color:#fff;font:600 12px Montserrat,Tajawal,sans-serif">{{ c.name }}</button></sc-for></div>
+      </sc-if>
+      <sc-if value="{{ ap2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.compat }}</div><div style="font-size:11px;color:#A3A3A3">{{ t.compatSub }}</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+          <sc-for list="{{ apCompat }}" as="c" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:#000;border:1px solid #333"><div style="width:8px;height:8px;border-radius:4px;background:#E30613"></div><div style="flex:1"><div style="font-size:13px;font-weight:600">{{ c.car }}</div><div style="font-size:11px;color:#A3A3A3;margin-top:2px">{{ c.years }}</div></div><button onClick="{{ c.remove }}" style="cursor:pointer;width:36px;height:36px;border:0;background:transparent;color:#A3A3A3;font-size:16px">✕</button></div></sc-for>
+        </div>
+        <div style="margin-top:14px;padding:14px;border-radius:16px;border:1px dashed #333;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:12px;font-weight:600;color:#A3A3A3">{{ t.addVehicle }}</div>
+          <div style="display:flex;gap:8px"><div style="flex:1;height:44px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 12px;font-size:13px;justify-content:space-between"><span>Toyota</span><span style="color:#A3A3A3">▾</span></div><div style="flex:1;height:44px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 12px;font-size:13px;justify-content:space-between"><span>Corolla</span><span style="color:#A3A3A3">▾</span></div></div>
+          <div style="display:flex;gap:8px"><div style="flex:1;height:44px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 12px;font-size:13px;justify-content:space-between"><span>2014</span><span style="color:#A3A3A3">▾</span></div><div style="flex:1;height:44px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 12px;font-size:13px;justify-content:space-between"><span>2019</span><span style="color:#A3A3A3">▾</span></div><button onClick="{{ apAddCompat }}" style="cursor:pointer;width:44px;height:44px;border-radius:12px;border:0;background:#E30613;color:#fff;font-size:20px">+</button></div>
+        </div>
+        <div style="margin-top:14px;padding:12px 14px;border-radius:14px;background:#000;border:1px solid #333;display:flex;gap:10px;align-items:center;font-size:12px;color:#A3A3A3;line-height:1.5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>{{ t.compatHint }}</div>
+      </sc-if>
+      <sc-if value="{{ ap3 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:8px">
+          <div style="flex:2"><div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.price }}</div><div style="margin-top:8px;height:52px;border-radius:12px;background:#000;border:1px solid #E30613;display:flex;align-items:center;padding:0 14px;font:800 18px Montserrat,sans-serif;justify-content:space-between">45,000<span style="font:600 11px Montserrat,Tajawal,sans-serif;color:#A3A3A3">{{ t.iqd }}</span></div></div>
+          <div style="flex:1"><div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600">{{ t.stock }}</div><div style="margin-top:8px;height:52px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;justify-content:space-between;padding:0 6px"><button style="cursor:pointer;width:36px;height:36px;border:0;background:#111;border-radius:8px;color:#fff;font-size:16px">−</button><span style="font:800 16px Montserrat,sans-serif">12</span><button style="cursor:pointer;width:36px;height:36px;border:0;background:#111;border-radius:8px;color:#fff;font-size:16px">+</button></div></div>
+        </div>
+        <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:16px">{{ t.bulk }}</div>
+        <div style="margin-top:8px;border:1px solid #333;border-radius:12px;overflow:hidden">
+          <div style="display:flex;justify-content:space-between;padding:12px 14px;font-size:13px;background:#000"><span style="color:#A3A3A3">1 – 3 {{ t.pcs }}</span><span style="font-weight:700">45,000</span></div>
+          <div style="display:flex;justify-content:space-between;padding:12px 14px;font-size:13px;background:#000;border-top:1px solid #222"><span style="color:#A3A3A3">4 – 9 {{ t.pcs }}</span><span style="font-weight:700">41,000</span></div>
+          <button style="cursor:pointer;width:100%;height:44px;border:0;border-top:1px solid #222;background:#000;color:#E30613;font:600 12px Montserrat,Tajawal,sans-serif">+ {{ t.addTier }}</button>
+        </div>
+        <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:16px">{{ t.deliveryOpts }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+          <sc-for list="{{ apDelivery }}" as="d" hint-placeholder-count="2"><button onClick="{{ d.pick }}" style="cursor:pointer;width:100%;height:52px;padding:0 14px;border-radius:12px;border:1px solid {{ d.border }};background:#000;color:#fff;display:flex;align-items:center;justify-content:space-between;font:600 13px Montserrat,Tajawal,sans-serif;text-align:start"><span>{{ d.name }}</span><span style="width:20px;height:20px;border-radius:10px;border:{{ d.ring }};box-sizing:border-box;display:block"></span></button></sc-for>
+        </div>
+        <div style="font-size:11px;letter-spacing:2px;color:#A3A3A3;font-weight:600;margin-top:16px">{{ t.description }}</div>
+        <div style="margin-top:8px;min-height:80px;border-radius:12px;background:#000;border:1px solid #333;padding:12px 14px;font-size:13px;color:#A3A3A3;line-height:1.5">{{ t.descPh }}</div>
+      </sc-if>
+      <div style="height:20px"></div>
+    </div>
+    <div style="padding:12px 20px 44px;border-top:1px solid #222;display:flex;gap:10px">
+      <button onClick="{{ apBack }}" style="cursor:pointer;flex:1;height:52px;border-radius:14px;border:1px solid #333;background:#000;color:#fff;font:600 13px Montserrat,Tajawal,sans-serif">{{ apBackLabel }}</button>
+      <button onClick="{{ apNext }}" style="cursor:pointer;flex:2;height:52px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 14px Montserrat,Tajawal,sans-serif">{{ apNextLabel }}</button>
+    </div>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- ORDER STATUS SHEET -->
+<sc-if value="{{ show.orderStatus }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Update order status" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">S4 · Update order status (sheet)</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding-top:58px">
+  <div style="padding:0 20px;font-size:17px;font-weight:700;opacity:.35">{{ t.tabOrders }}</div>
+  <div style="margin-top:auto;background:#111;border-radius:28px 28px 0 0;border-top:1px solid #333;padding:14px 20px 44px">
+    <div style="width:40px;height:4px;border-radius:2px;background:#333;margin:0 auto 14px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:18px;font-weight:700">{{ t.updateStatus }}</div><div style="font-size:12px;color:#A3A3A3;margin-top:2px;font-family:monospace">#AK-20931 · Ali H. · {{ t.baghdad }}</div></div><button onClick="{{ goSellerOrders }}" style="cursor:pointer;width:44px;height:44px;border-radius:22px;border:0;background:#1a1a1a;color:#fff;font-size:18px">×</button></div>
+    <div style="margin-top:18px;display:flex;gap:12px;padding:12px 14px;border-radius:14px;background:#000;border:1px solid #333;align-items:center"><div style="width:48px;height:48px;border-radius:10px;background:repeating-linear-gradient(135deg,#1c1c1c 0 6px,#141414 6px 12px)"></div><div style="flex:1"><div style="font-size:13px;font-weight:600">{{ t.samplePartName }}</div><div style="font-size:11px;color:#A3A3A3;margin-top:2px">× 2 · 90,000 {{ t.iqd }} · {{ t.cod }}</div></div></div>
+    <div style="margin-top:18px;display:flex;flex-direction:column">
+      <sc-for list="{{ statusSteps }}" as="s" hint-placeholder-count="5">
+      <button onClick="{{ s.pick }}" style="cursor:pointer;display:flex;align-items:center;gap:14px;height:52px;padding:0;border:0;background:transparent;color:#fff;text-align:start;font-family:Montserrat,Tajawal,sans-serif">
+        <div style="display:flex;flex-direction:column;align-items:center;height:52px;width:24px"><div style="flex:1;width:2px;background:{{ s.lineTop }}"></div><div style="width:22px;height:22px;border-radius:11px;background:{{ s.dotBg }};border:2px solid {{ s.dotBorder }};box-sizing:border-box;display:flex;align-items:center;justify-content:center"><sc-if value="{{ s.done }}" hint-placeholder-val="{{ false }}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><path d="m5 12 5 5L20 7"></path></svg></sc-if></div><div style="flex:1;width:2px;background:{{ s.lineBottom }}"></div></div>
+        <div style="flex:1;font-size:14px;font-weight:{{ s.weight }};color:{{ s.color }}">{{ s.name }}</div>
+        <div style="font-size:11px;color:#A3A3A3">{{ s.time }}</div>
+      </button>
+      </sc-for>
+    </div>
+    <div style="margin-top:12px;height:48px;border-radius:12px;background:#000;border:1px solid #333;display:flex;align-items:center;padding:0 14px;font-size:13px;color:#A3A3A3">{{ t.noteToBuyer }}</div>
+    <button onClick="{{ goSellerOrders }}" style="cursor:pointer;margin-top:14px;width:100%;height:52px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 14px Montserrat,Tajawal,sans-serif">{{ t.saveNotify }}</button>
+  </div>
+</div>
+</x-import></div></sc-if>
+
+<!-- DELETE CONFIRM -->
+<sc-if value="{{ show.confirmDelete }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Delete confirm" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:12px;color:#A3A3A3">S5 · Delete product (dialog)</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div dir="{{ dir }}" style="height:100%;display:flex;flex-direction:column;background:#000;color:#fff;font-family:Montserrat,Tajawal,sans-serif;box-sizing:border-box;padding:58px 20px 0;align-items:center;justify-content:center">
+  <div style="position:absolute;top:58px;inset-inline-start:20px;font-size:17px;font-weight:700;opacity:.35">{{ shop.name }}</div>
+  <div style="width:100%;background:#111;border:1px solid #333;border-radius:24px;padding:24px 20px 20px;text-align:center">
+    <div style="width:56px;height:56px;border-radius:28px;background:rgba(227,6,19,.15);margin:0 auto;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E30613" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg></div>
+    <div style="font-size:17px;font-weight:700;margin-top:14px">{{ t.deleteTitle }}</div>
+    <div style="font-size:13px;color:#A3A3A3;margin-top:6px;line-height:1.5">{{ deleteName }}<br>{{ t.deleteSub }}</div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button onClick="{{ goSellerShop }}" style="cursor:pointer;flex:1;height:48px;border-radius:14px;border:1px solid #333;background:#000;color:#fff;font:600 13px Montserrat,Tajawal,sans-serif">{{ t.cancel }}</button>
+      <button onClick="{{ confirmDelete }}" style="cursor:pointer;flex:1;height:48px;border-radius:14px;border:0;background:#E30613;color:#fff;font:700 13px Montserrat,Tajawal,sans-serif">{{ t.delete }}</button>
+    </div>
+  </div>
+</div>
+</x-import></div></sc-if>
+</div>
+
+<sc-if value="{{ showNext }}" hint-placeholder-val="{{ true }}"><div style="font-size:12px;color:#A3A3A3;line-height:1.7;border-top:1px solid #333;padding-top:20px;max-width:760px"><strong style="color:#fff">Assumptions:</strong> Iraq-only, IQD, cash on delivery default; one shop per seller shown (multi-shop supported on the seller profile). Photos are striped placeholders — drop real part imagery in later.<br><strong style="color:#fff">Try next:</strong> "add a checkout + order tracking flow" · "add RFQ / bulk quote like Alibaba" · "switch to prototype mode and walk the buyer flow" · "show the Arabic version by default".</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;lang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;'en'|'ar'&quot;,&quot;section&quot;:&quot;Language&quot;},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;canvas&quot;,&quot;prototype&quot;],&quot;default&quot;:&quot;canvas&quot;,&quot;tsType&quot;:&quot;'canvas'|'prototype'&quot;,&quot;section&quot;:&quot;View&quot;}}">
+const R='#E30613',G='#333333',D='#111111';
+const T={
+en:{onbTitle:'Tell us about your car',onbSub:'We use it to show only parts that fit. You can add more cars later.',make:'MAKE',model:'MODEL',year:'YEAR',or:'or',vinCta:'Enter VIN / chassis number',continue:'Continue',vinTitle:'VIN lookup',vinSub:'17 characters, found on the dashboard or the door jamb. We decode make, model, year and engine.',scanVin:'Scan with camera',pasteVin:'Paste',decoded:'DECODED',useCar:'Use this car',searchPh:'Part name, OEM number, VIN…',fitsOnly:'Fits my car',results:'Results',sort:'Sort: relevance',fits:'Fits',checkFit:'Check fit',iqd:'IQD',tabHome:'Home',tabSearch:'Search',tabCart:'Cart',tabProfile:'Profile',filters:'Filters',reset:'Reset',category:'CATEGORY',condition:'CONDITION',brand:'BRAND',price:'PRICE',min:'Min',max:'Max',city:'CITY',saveSearch:'Save this search',saveSearchSub:'Alert me when new matching parts are listed',cancel:'Cancel',showResults:'Show results',imgTitle:'Search by image',detected:'Detected:',detectedPart:'Brake disc',fitsYour:'Fits your',stock:'Stock',delivery:'Delivery',days:'days',cod:'Cash on delivery',respRate:'Response',soldBy:'Sold by',specs:'SPECIFICATIONS',addToCart:'Add to cart',added:'Added ✓',buyNow:'Buy now',since:'Since',follow:'Follow',searchInShop:'Search in this shop',shopAbout:'Genuine and aftermarket parts for Japanese and Korean cars. Wholesale to workshops across Baghdad. Same-day delivery inside the city.',hours:'Hours',address:'Address',payment:'PAYMENT',sellerProfile:'Seller',idVerified:'ID verified',member:'Member since',message:'Message',call:'Call',shopsBy:'SHOPS BY THIS SELLER',ratings:'RATINGS',reviewsWord:'reviews',report:'Report seller',profile:'Profile',buyerName:'Mustafa Al-Jabouri',buyerInitial:'M',baghdad:'Baghdad',edit:'Edit',garage:'MY GARAGE',addCar:'Add car',activeCar:'Active',savedSearches:'SAVED SEARCHES',orders:'ORDERS',seeAll:'See all',cart:'Cart',deliverTo:'Deliver to',cartEmpty:'Your cart is empty. Parts that fit your car are one tap away.',browse:'Browse parts',codSub:'Pay the courier',card:'Card / wallet',subtotal:'Subtotal',total:'Total',checkout:'Checkout',account:'Account',verifiedSeller:'Verified seller',balance:'AVAILABLE BALANCE',nextPayout:'Next payout',thursday:'Thursday',withdraw:'Withdraw',verification:'VERIFICATION',logout:'Log out',tabDash:'Dashboard',tabShop:'My shop',tabOrders:'Orders',tabAccount:'Account',open:'Open',editShop:'Edit shop',searchMyProducts:'Search my products',addProduct:'Add product',updateStatus:'Update status',photos:'PHOTOS',add:'Add',cover:'COVER',partName:'PART NAME',samplePartName:'Front brake pads set — Camry XV70',catBrakes:'Brakes',subPads:'Pads',compat:'COMPATIBILITY',compatSub:'Powers the "Fits" badge',addVehicle:'Add vehicle range',compatHint:'Buyers filter by their car. Every vehicle you add here makes this listing visible to them.',bulk:'BULK PRICING (OPTIONAL)',pcs:'pcs',addTier:'Add tier',deliveryOpts:'DELIVERY',description:'DESCRIPTION',descPh:'Condition notes, warranty, what is included…',back:'Back',next:'Next',publish:'Publish listing',noteToBuyer:'Note to buyer (optional)',saveNotify:'Save & notify buyer',deleteTitle:'Delete this product?',deleteSub:'It will be removed from your shop and from buyers\' carts.',delete:'Delete',tabs:['Products','About','Reviews'],stabs:['Products','Orders'],conds:['All','New','Used'],cats:['Brakes','Engine','Filters','Electrical','Body','Suspension'],cities:['Baghdad','Erbil','Basra','Mosul','Najaf'],statuses:['Received','Preparing','Shipped','Out for delivery','Delivered'],orderChips:['All','New','Preparing','Shipped','Delivered'],stockChips:['Active','Out of stock'],inStock:'In stock',lowStock:'Low stock',outStock:'Out of stock',shopStats:['Products','Rating','Response','Followers'],sellerStats:['Orders','Rating','Response'],accStats:['Sales (30d)','Orders','Rating'],docs:[['National ID','Verified'],['Business license','Verified'],['Bank account','Pending']],accMenu:[['My shops','1'],['Orders','12 new'],['Notifications',''],['Payout method','Zain Cash'],['Support',''],['Language','English']],profileMenu:[['Addresses','2'],['Payment','Cash on delivery'],['Notifications','On'],['Help & support','']],specs:[['Position','Front axle'],['Material','Ceramic'],['Warranty','12 months'],['Weight','1.8 kg']],reviews:[['Ahmed K.','★★★★★','Original part, fit my Camry perfectly. Delivered next day in Karrada.'],['Sara M.','★★★★☆','Good price. Packaging could be better.'],['Omar T.','★★★★★','Fast replies, checked the VIN for me before shipping.']],deliveryList:[['Shop delivery inside city','2,500 IQD'],['Courier (nationwide)','5,000 IQD'],['Pickup from shop','Free']],hint:['Tap the EN/ع toggle inside the phones to switch language.']},
+ar:{onbTitle:'خبرنا عن سيارتك',onbSub:'نستخدمها لعرض القطع المناسبة فقط. يمكنك إضافة سيارات أخرى لاحقاً.',make:'الشركة',model:'الموديل',year:'السنة',or:'أو',vinCta:'أدخل رقم الشاصي (VIN)',continue:'متابعة',vinTitle:'البحث برقم الشاصي',vinSub:'17 رمزاً تجده على التابلو أو باب السائق. نستخرج الشركة والموديل والسنة والمحرك.',scanVin:'مسح بالكاميرا',pasteVin:'لصق',decoded:'تم التعرّف',useCar:'استخدم هذه السيارة',searchPh:'اسم القطعة، رقم OEM، الشاصي…',fitsOnly:'يناسب سيارتي',results:'النتائج',sort:'ترتيب: الأنسب',fits:'يناسب',checkFit:'تحقق',iqd:'د.ع',tabHome:'الرئيسية',tabSearch:'بحث',tabCart:'السلة',tabProfile:'حسابي',filters:'الفلاتر',reset:'إعادة',category:'الفئة',condition:'الحالة',brand:'الماركة',price:'السعر',min:'من',max:'إلى',city:'المدينة',saveSearch:'احفظ هذا البحث',saveSearchSub:'نبّهني عند إضافة قطع مطابقة',cancel:'إلغاء',showResults:'عرض النتائج',imgTitle:'البحث بالصورة',detected:'تم التعرّف:',detectedPart:'قرص فرامل',fitsYour:'يناسب',stock:'المخزون',delivery:'التوصيل',days:'أيام',cod:'الدفع عند الاستلام',respRate:'الرد',soldBy:'البائع',specs:'المواصفات',addToCart:'أضف إلى السلة',added:'تمت الإضافة ✓',buyNow:'اشترِ الآن',since:'منذ',follow:'متابعة',searchInShop:'ابحث داخل المتجر',shopAbout:'قطع أصلية وتجارية للسيارات اليابانية والكورية. بيع جملة للورش في بغداد. توصيل بنفس اليوم داخل المدينة.',hours:'الدوام',address:'العنوان',payment:'الدفع',sellerProfile:'البائع',idVerified:'هوية موثّقة',member:'عضو منذ',message:'مراسلة',call:'اتصال',shopsBy:'متاجر هذا البائع',ratings:'التقييمات',reviewsWord:'تقييم',report:'إبلاغ عن البائع',profile:'حسابي',buyerName:'مصطفى الجبوري',buyerInitial:'م',baghdad:'بغداد',edit:'تعديل',garage:'كراجي',addCar:'إضافة سيارة',activeCar:'الحالية',savedSearches:'عمليات البحث المحفوظة',orders:'الطلبات',seeAll:'عرض الكل',cart:'السلة',deliverTo:'التوصيل إلى',cartEmpty:'سلتك فارغة. القطع المناسبة لسيارتك على بعد نقرة.',browse:'تصفح القطع',codSub:'ادفع للمندوب',card:'بطاقة / محفظة',subtotal:'المجموع الفرعي',total:'المجموع',checkout:'إتمام الطلب',account:'الحساب',verifiedSeller:'بائع موثّق',balance:'الرصيد المتاح',nextPayout:'التحويل القادم',thursday:'الخميس',withdraw:'سحب',verification:'التوثيق',logout:'تسجيل الخروج',tabDash:'اللوحة',tabShop:'متجري',tabOrders:'الطلبات',tabAccount:'الحساب',open:'مفتوح',editShop:'تعديل المتجر',searchMyProducts:'ابحث في منتجاتي',addProduct:'إضافة منتج',updateStatus:'تحديث الحالة',photos:'الصور',add:'إضافة',cover:'الغلاف',partName:'اسم القطعة',samplePartName:'طقم فحمات فرامل أمامية — كامري XV70',catBrakes:'الفرامل',subPads:'فحمات',compat:'التوافق',compatSub:'يُشغّل شارة «يناسب»',addVehicle:'إضافة نطاق سيارات',compatHint:'المشترون يفلترون حسب سياراتهم. كل سيارة تضيفها هنا تجعل هذا المنتج ظاهراً لهم.',bulk:'تسعير الجملة (اختياري)',pcs:'قطعة',addTier:'إضافة مستوى',deliveryOpts:'التوصيل',description:'الوصف',descPh:'ملاحظات الحالة، الضمان، ما هو مشمول…',back:'رجوع',next:'التالي',publish:'نشر المنتج',noteToBuyer:'ملاحظة للمشتري (اختياري)',saveNotify:'حفظ وإشعار المشتري',deleteTitle:'حذف هذا المنتج؟',deleteSub:'سيُحذف من متجرك ومن سلات المشترين.',delete:'حذف',tabs:['المنتجات','عن المتجر','التقييمات'],stabs:['المنتجات','الطلبات'],conds:['الكل','جديد','مستعمل'],cats:['الفرامل','المحرك','الفلاتر','الكهرباء','الهيكل','التعليق'],cities:['بغداد','أربيل','البصرة','الموصل','النجف'],statuses:['تم الاستلام','جاري التجهيز','تم الشحن','قيد التوصيل','تم التسليم'],orderChips:['الكل','جديد','تجهيز','مشحون','مسلّم'],stockChips:['نشط','نفد'],inStock:'متوفر',lowStock:'كمية قليلة',outStock:'نفد',shopStats:['منتج','تقييم','رد','متابع'],sellerStats:['طلب','تقييم','رد'],accStats:['مبيعات (30 يوم)','طلبات','تقييم'],docs:[['الهوية الوطنية','موثّق'],['رخصة تجارية','موثّق'],['حساب بنكي','قيد المراجعة']],accMenu:[['متاجري','1'],['الطلبات','12 جديد'],['الإشعارات',''],['طريقة التحويل','زين كاش'],['الدعم',''],['اللغة','العربية']],profileMenu:[['العناوين','2'],['الدفع','عند الاستلام'],['الإشعارات','مفعّل'],['المساعدة','']],specs:[['الموقع','المحور الأمامي'],['المادة','سيراميك'],['الضمان','12 شهر'],['الوزن','1.8 كغ']],reviews:[['أحمد ك.','★★★★★','قطعة أصلية وركبت على الكامري تمام. وصلت ثاني يوم للكرادة.'],['سارة م.','★★★★☆','سعر جيد. التغليف يحتاج تحسين.'],['عمر ت.','★★★★★','رد سريع، تأكدوا من الشاصي قبل الشحن.']],deliveryList:[['توصيل المتجر داخل المدينة','2,500 د.ع'],['شركة توصيل (كل العراق)','5,000 د.ع'],['استلام من المتجر','مجاناً']],hint:['']}};
+const MAKES=['Toyota','Kia','Hyundai','Nissan','Chevrolet','BMW'];
+const MODELS={Toyota:['Camry','Corolla','Land Cruiser','Hilux'],Kia:['Sportage','Optima','Cerato','Sorento'],Hyundai:['Elantra','Sonata','Tucson','Santa Fe'],Nissan:['Sunny','Altima','Patrol'],Chevrolet:['Cruze','Malibu','Tahoe'],BMW:['3 Series','5 Series','X5']};
+const YEARS=[2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012];
+const BRANDS=['Toyota Genuine','Brembo','Bosch','Denso','Mobis','TRW'];
+const P=[
+{id:1,n:['Front brake pads set — ceramic','طقم فحمات فرامل أمامية — سيراميك'],oem:'04465-33471',price:45000,cond:'new',fits:true,cat:0,img:'brake pads',brand:'Toyota Genuine',stock:12},
+{id:2,n:['Front brake disc 305mm','قرص فرامل أمامي 305مم'],oem:'43512-06150',price:78000,cond:'new',fits:true,cat:0,img:'brake disc',brand:'Brembo',stock:6},
+{id:3,n:['Engine oil filter','فلتر زيت المحرك'],oem:'90915-YZZD4',price:9500,cond:'new',fits:true,cat:2,img:'oil filter',brand:'Denso',stock:40},
+{id:4,n:['Headlight assembly LH (used)','مصباح أمامي يسار (مستعمل)'],oem:'81150-06C10',price:165000,cond:'used',fits:false,cat:4,img:'headlight',brand:'Toyota Genuine',stock:1},
+{id:5,n:['Cabin air filter','فلتر مكيف'],oem:'87139-0E040',price:12000,cond:'new',fits:true,cat:2,img:'cabin filter',brand:'Bosch',stock:25},
+{id:6,n:['Front shock absorber','مساعد أمامي'],oem:'48510-8Z296',price:96000,cond:'new',fits:false,cat:5,img:'shock absorber',brand:'TRW',stock:4}];
+const fmt=n=>n.toLocaleString('en-US');
+class Component extends DCLogic{
+state={lang:null,screen:'home',make:'Toyota',model:'Camry',year:2018,fitsOnly:false,saveSearch:false,cat:-1,cond:0,catOpen:{0:true},sub:null,brand:null,city:null,cart:{1:1,2:2},shopTab:0,sellerTab:0,apStep:0,apCond:0,apDelivery:0,apCompat:[['Toyota Camry','2018 – 2024'],['Lexus ES','2019 – 2024']],compatCounter:0,orderStatus:1,deleted:{},deleteId:null,stockChip:0,alerts:{0:true,1:false},garageActive:0,added:false};
+renderVals(){
+const s=this.state,lang=s.lang??this.props.lang??'en',t=T[lang],ar=lang==='ar',i=ar?1:0;
+const mode=this.props.mode??'canvas',canvas=mode==='canvas';
+const go=k=>()=>this.setState({screen:k,added:false});
+const SCREENS=['onboarding','vin','home','filters','imgsearch','product','shop','seller','profile','cart','sellerAccount','sellerShop','addProduct','orderStatus','confirmDelete'];
+const show={};SCREENS.forEach(k=>show[k]=canvas||s.screen===k);
+const sel=(on)=>({bg:on?R:D,border:on?R:G});
+const carLabel=`${s.make} ${s.model} ${s.year}`;
+const models=(MODELS[s.make]||[]).map(m=>({name:m,...sel(m===s.model),pick:()=>this.setState({model:m})}));
+const prods=P.filter(p=>!s.deleted[p.id]).map(p=>({...p,name:p.n[i],price:fmt(p.price),cond:p.cond==='new'?t.conds[1]:t.conds[2],nofits:!p.fits,shop:ar?'الرافدين':'Al-Rafidain',city:ar?'بغداد':'Baghdad',open:()=>this.setState({screen:'product',cur:p.id,added:false}),edit:()=>this.setState({screen:'addProduct',apStep:0}),del:()=>this.setState({screen:'confirmDelete',deleteId:p.id})}));
+const listed=prods.filter(p=>(!s.fitsOnly||p.fits)&&(s.cat<0||p.cat===s.cat)&&(s.cond===0||(s.cond===1?p.cond===t.conds[1]:p.cond===t.conds[2])));
+const cur=prods.find(p=>p.id===(s.cur||1))||prods[0];
+const cartIds=Object.keys(s.cart).map(Number).filter(id=>s.cart[id]>0&&!s.deleted[id]);
+const items=cartIds.map(id=>{const p=prods.find(x=>x.id===id);return{...p,qty:s.cart[id],inc:()=>this.setState({cart:{...s.cart,[id]:s.cart[id]+1}}),dec:()=>this.setState({cart:{...s.cart,[id]:Math.max(0,s.cart[id]-1)}}),remove:()=>this.setState({cart:{...s.cart,[id]:0}})}});
+const sub=items.reduce((a,p)=>a+P.find(x=>x.id===p.id).price*p.qty,0),fee=items.length?2500:0;
+const cartCount=items.reduce((a,p)=>a+p.qty,0);
+const tog=(on)=>({bg:on?R:'#222',border:on?R:G,knob:on?'23px':'3px'});
+const stLabel=p=>p.stock===0?[t.outStock,'#222','#444']:p.stock<5?[t.lowStock,'rgba(227,6,19,.2)',R]:[t.inStock,'#0f2a14','#1f6b2e'];
+const stat=[['Received','9:12'],['Preparing','9:40'],['Shipped',''],['Out for delivery',''],['Delivered','']];
+const oStatus=(k)=>{const done=k<=1;return{bg:done?'#0f2a14':k===2?'rgba(227,6,19,.2)':'#222',border:done?'#1f6b2e':k===2?R:'#444'}};
+const jumpList=[['home','Buyer · Listings'],['onboarding','Buyer · Onboarding'],['cart','Buyer · Cart'],['sellerShop','Seller · My shop'],['sellerAccount','Seller · Account']];
+return{t,dir:ar?'rtl':'ltr',show,showBuyerHead:canvas,showSellerHead:canvas,showNext:canvas,carLabel,cartCount,hasCart:cartCount>0,cartEmpty:cartCount===0,
+jump:[{label:canvas?'● Canvas':'Canvas',bg:canvas?R:D,border:canvas?R:G,go:()=>this.setState({screen:s.screen})},...jumpList.map(([k,l])=>({label:l,bg:!canvas&&s.screen===k?R:D,border:!canvas&&s.screen===k?R:G,go:go(k)}))],
+setEn:()=>this.setState({lang:'en'}),setAr:()=>this.setState({lang:'ar'}),enBg:ar?'transparent':R,arBg:ar?R:'transparent',
+goHome:go('home'),goVin:go('vin'),goImg:go('imgsearch'),goFilters:go('filters'),goProduct:go('product'),goShop:go('shop'),goSeller:go('seller'),goProfile:go('profile'),goCart:go('cart'),goOnboarding:go('onboarding'),goSellerAccount:go('sellerAccount'),goSellerShop:()=>this.setState({screen:'sellerShop',sellerTab:0}),goSellerOrders:()=>this.setState({screen:'sellerShop',sellerTab:1}),goAddProduct:()=>this.setState({screen:'addProduct',apStep:0}),
+makes:MAKES.map(m=>({name:m,...sel(m===s.make),pick:()=>this.setState({make:m,model:MODELS[m][0]})})),models,
+years:YEARS.map(y=>({name:String(y),...sel(y===s.year),pick:()=>this.setState({year:y})})),
+vinChars:'4T1B11HK5JU12'.padEnd(17,' ').split('').map((ch,k)=>({ch,border:k<13?'#555':R})),useDecoded:()=>this.setState({make:'Toyota',model:'Camry',year:2018,screen:'home'}),
+toggleFits:()=>this.setState({fitsOnly:!s.fitsOnly}),fitsBg:tog(s.fitsOnly).bg,fitsBorder:tog(s.fitsOnly).border,fitsKnob:tog(s.fitsOnly).knob,
+toggleSave:()=>this.setState({saveSearch:!s.saveSearch}),saveBg:tog(s.saveSearch).bg,saveBorder:tog(s.saveSearch).border,saveKnob:tog(s.saveSearch).knob,
+cats:t.cats.map((c,k)=>({name:c,bg:s.cat===k?R:D,border:s.cat===k?R:'#222',icon:s.cat===k?'#fff':R,pick:()=>this.setState({cat:s.cat===k?-1:k})})),
+products:listed,resultCount:listed.length,imgResults:prods.filter(p=>p.cat===0),
+catTree:t.cats.slice(0,3).map((c,k)=>({name:c,count:[42,118,64][k],open:!!s.catOpen[k],chev:s.catOpen[k]?'▴':'▾',toggle:()=>this.setState({catOpen:{...s.catOpen,[k]:!s.catOpen[k]}}),subs:(ar?[['فحمات','أقراص','كاليبر'],['بواجي','سيور','مضخة ماء'],['زيت','هواء','مكيف']]:[['Pads','Discs','Calipers'],['Spark plugs','Belts','Water pump'],['Oil','Air','Cabin']])[k].map(sb=>({name:sb,...sel(s.sub===sb),pick:()=>this.setState({sub:s.sub===sb?null:sb})}))})),
+conds:t.conds.map((c,k)=>({name:c,bg:s.cond===k?R:'transparent',pick:()=>this.setState({cond:k})})),
+brands:BRANDS.map(b=>({name:b,...sel(s.brand===b),pick:()=>this.setState({brand:s.brand===b?null:b})})),
+cities:t.cities.map(c=>({name:c,...sel(s.city===c),pick:()=>this.setState({city:s.city===c?null:c})})),
+resetFilters:()=>this.setState({cat:-1,cond:0,sub:null,brand:null,city:null,fitsOnly:false}),
+cur,specs:t.specs.map(([k,v])=>({k,v})),addLabel:s.added?t.added:t.addToCart,addCur:()=>this.setState({cart:{...s.cart,[cur.id]:(s.cart[cur.id]||0)+1},added:true}),buyNow:()=>this.setState({cart:{...s.cart,[cur.id]:(s.cart[cur.id]||0)+1},screen:'cart'}),
+shop:{name:ar?'الرافدين لقطع السيارات':'Al-Rafidain Auto Parts',city:ar?'بغداد':'Baghdad',addr:ar?'شارع الصناعة، بغداد':'Sinaa St., Baghdad'},seller:{name:ar?'حيدر الربيعي':'Haider Al-Rubaie',initial:ar?'ح':'H'},
+shopStats:[['312',t.shopStats[0]],['4.8',t.shopStats[1]],['98%',t.shopStats[2]],['2.1k',t.shopStats[3]]].map(([v,k])=>({v,k})),
+shopTabs:t.tabs.map((n,k)=>({name:n,border:s.shopTab===k?R:'transparent',color:s.shopTab===k?'#fff':'#A3A3A3',pick:()=>this.setState({shopTab:k})})),shopTabProducts:s.shopTab===0,shopTabAbout:s.shopTab===1,shopTabReviews:s.shopTab===2,
+shopCats:t.cats.slice(0,4).map((c,k)=>({name:c,...sel(k===0)})),shopProducts:prods,reviews:t.reviews.map(([who,stars,text])=>({who,stars,text})),
+sellerStats:[['3,420',t.sellerStats[0]],['4.8',t.sellerStats[1]],['< 1h',t.sellerStats[2]]].map(([v,k])=>({v,k})),
+sellerShops:[{initial:'R',name:ar?'الرافدين لقطع السيارات':'Al-Rafidain Auto Parts',meta:(ar?'بغداد · 312 منتج':'Baghdad · 312 products')},{initial:'K',name:ar?'الرافدين — أربيل':'Al-Rafidain — Erbil',meta:(ar?'أربيل · 96 منتج':'Erbil · 96 products')}],
+ratingBars:[5,4,3,2,1].map((n,k)=>({n,w:['82%','12%','4%','1%','1%'][k]})),
+garage:[{name:'Toyota Camry 2018',vin:'4T1B11HK5JU1••••'},{name:'Kia Sportage 2021',vin:'KNDPM3AC3M7••••'}].map((g,k)=>({...g,active:s.garageActive===k,border:s.garageActive===k?R:'#222',pick:()=>this.setState({garageActive:k,make:k?'Kia':'Toyota',model:k?'Sportage':'Camry',year:k?2021:2018})})),
+savedSearches:[{q:ar?'فحمات فرامل كامري 2018':'Brake pads Camry 2018',meta:ar?'جديد · بغداد · 3 نتائج جديدة':'New · Baghdad · 3 new results'},{q:ar?'مصباح أمامي مستعمل':'Used headlight LH',meta:ar?'مستعمل · أي مدينة':'Used · any city'}].map((x,k)=>({...x,...tog(!!s.alerts[k]),toggle:()=>this.setState({alerts:{...s.alerts,[k]:!s.alerts[k]}})})),
+buyerOrders:[{id:'AK-20931',name:P[0].n[i],price:fmt(90000),status:t.statuses[1],...oStatus(1)},{id:'AK-20877',name:P[2].n[i],price:fmt(9500),status:t.statuses[4],...oStatus(0)}],
+profileMenu:t.profileMenu.map(([k,v])=>({k,v})),
+cartGroups:items.length?[{shop:ar?'الرافدين لقطع السيارات':'Al-Rafidain Auto Parts',initial:'R',fee:fmt(fee),items}]:[],subtotal:fmt(sub),deliveryTotal:fmt(fee),total:fmt(sub+fee),
+accStats:[['4.2M',t.accStats[0],'+12%'],['128',t.accStats[1],'+8'],['4.8',t.accStats[2],'★']].map(([v,k,d])=>({v,k,d})),
+docs:t.docs.map(([k,v],idx)=>({k,v,bg:idx<2?'#0f2a14':'rgba(227,6,19,.2)',border:idx<2?'#1f6b2e':R})),
+accMenu:t.accMenu.map(([k,v],idx)=>({k,v,go:idx===0?()=>this.setState({screen:'sellerShop',sellerTab:0}):idx===1?()=>this.setState({screen:'sellerShop',sellerTab:1}):idx===5?()=>this.setState({lang:ar?'en':'ar'}):()=>{}})),
+sellerTabs:t.stabs.map((n,k)=>({name:n,count:k===0?prods.length:12,border:s.sellerTab===k?R:'transparent',color:s.sellerTab===k?'#fff':'#A3A3A3',badgeBg:k===1?R:'#333',pick:()=>this.setState({sellerTab:k})})),sellerTabProducts:s.sellerTab===0,sellerTabOrders:s.sellerTab===1,shopTabColor:s.sellerTab===0?R:'#A3A3A3',ordersTabColor:s.sellerTab===1?R:'#A3A3A3',
+stockChips:t.stockChips.map((n,k)=>({name:n,...sel(s.stockChip===k),pick:()=>this.setState({stockChip:k})})),
+myProducts:prods.filter(p=>s.stockChip===0?p.stock>0:p.stock<5).map(p=>{const[l,bg,b]=stLabel(p);return{...p,stockLabel:l+(p.stock?` · ${p.stock}`:''),stBg:bg,stBorder:b}}),
+orderChips:t.orderChips.map((n,k)=>({name:n,...sel(k===0)})),
+sellerOrders:[{id:'AK-20931',name:P[0].n[i],buyer:ar?'علي ح.':'Ali H.',city:t.baghdad,price:fmt(90000),status:t.statuses[s.orderStatus],...oStatus(s.orderStatus>=2?2:1)},{id:'AK-20928',name:P[1].n[i],buyer:ar?'نور س.':'Noor S.',city:ar?'أربيل':'Erbil',price:fmt(78000),status:t.statuses[0],...oStatus(2)},{id:'AK-20910',name:P[4].n[i],buyer:ar?'كرار م.':'Karrar M.',city:t.baghdad,price:fmt(12000),status:t.statuses[4],...oStatus(0)}].map(o=>({...o,update:()=>this.setState({screen:'orderStatus'})})),
+apSteps:(ar?['المعلومات','التوافق','السعر والنشر']:['Details','Compatibility','Price & publish']).map((n,k)=>({name:n,color:s.apStep>=k?'#fff':'#A3A3A3',bar:s.apStep>=k?R:'#333',pick:()=>this.setState({apStep:k})})),ap1:s.apStep===0,ap2:s.apStep===1,ap3:s.apStep===2,
+apConds:t.conds.slice(1).concat(ar?['مجدّد']:['Refurbished']).map((c,k)=>({name:c,bg:s.apCond===k?R:'transparent',pick:()=>this.setState({apCond:k})})),
+apCompat:s.apCompat.map((c,k)=>({car:c[0],years:c[1],remove:()=>this.setState({apCompat:s.apCompat.filter((_,j)=>j!==k)})})),apAddCompat:()=>this.setState({apCompat:[...s.apCompat,['Toyota Corolla','2014 – 2019']]}),
+apDelivery:t.deliveryList.map(([n,f],k)=>({name:`${n} · ${f}`,border:s.apDelivery===k?R:G,ring:s.apDelivery===k?`6px solid ${R}`:'1px solid #555',pick:()=>this.setState({apDelivery:k})})),
+apBack:()=>s.apStep===0?this.setState({screen:'sellerShop'}):this.setState({apStep:s.apStep-1}),apNext:()=>s.apStep===2?this.setState({screen:'sellerShop',sellerTab:0}):this.setState({apStep:s.apStep+1}),apBackLabel:s.apStep===0?t.cancel:t.back,apNextLabel:s.apStep===2?t.publish:t.next,
+statusSteps:t.statuses.map((n,k)=>{const done=k<=s.orderStatus,curr=k===s.orderStatus;return{name:n,done:done&&!curr,dotBg:curr?R:done?R:'#000',dotBorder:done?R:'#444',lineTop:k===0?'transparent':done?R:'#333',lineBottom:k===4?'transparent':k<s.orderStatus?R:'#333',weight:curr?700:500,color:done?'#fff':'#A3A3A3',time:stat[k][1]&&k<=s.orderStatus?stat[k][1]:'',pick:()=>this.setState({orderStatus:k})}}),
+deleteName:(P.find(p=>p.id===s.deleteId)||P[3]).n[i],confirmDelete:()=>this.setState({deleted:{...s.deleted,[s.deleteId||4]:true},screen:'sellerShop'})};
+}}
+</script>
+</body>
+</html>
